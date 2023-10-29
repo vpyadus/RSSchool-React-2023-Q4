@@ -31,12 +31,21 @@ class App extends Component<Props, AppState> {
     this.setState({ items: data, isLoading: false });
   }
 
-  async searchHandler(search: string): Promise<void> {
+  searchHandler(search: string): void {
     this.setState((prevState) => ({
       ...prevState,
       isLoading: true,
     }));
     this.runSearch(search);
+  }
+
+  showError(): void {
+    this.setState((prevState) => {
+      return {
+        ...prevState,
+        shouldShowError: true,
+      };
+    });
   }
 
   render(): ReactNode {
@@ -53,18 +62,7 @@ class App extends Component<Props, AppState> {
           <Search
             searchHandler={(search: string) => this.searchHandler(search)}
           />
-          <button
-            onClick={() =>
-              this.setState((prevState) => {
-                return {
-                  ...prevState,
-                  shouldShowError: true,
-                };
-              })
-            }
-          >
-            Test Error Boundary
-          </button>
+          <button onClick={() => this.showError()}>Test Error Boundary</button>
         </div>
         {this.state.isLoading && <div>Loading, please wait...</div>}
         {!this.state.isLoading && (
