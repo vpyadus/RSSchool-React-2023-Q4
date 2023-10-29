@@ -64,8 +64,9 @@ class App extends Component<Props, AppState> {
           />
           <button onClick={() => this.showError()}>Test Error Boundary</button>
         </div>
-        {this.state.isLoading && <div>Loading, please wait...</div>}
-        {!this.state.isLoading && (
+        {this.state.isLoading ? (
+          <div>Loading, please wait...</div>
+        ) : (
           <div style={{ display: 'flex', flexFlow: 'row wrap' }}>
             {this.state.items.map((card) => (
               <Card key={card.id} {...card} />
