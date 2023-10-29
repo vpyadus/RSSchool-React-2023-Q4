@@ -3,6 +3,7 @@ import Card, { CardProps } from './components/Card';
 import Search from './components/Search';
 import BeerAPI from './api/BeerAPI';
 import TestError from './components/TestError';
+import Spinner from './components/Spinner';
 
 interface Props {
   children?: ReactNode;
@@ -65,7 +66,7 @@ class App extends Component<Props, AppState> {
           <button onClick={() => this.showError()}>Test Error Boundary</button>
         </div>
         {this.state.isLoading ? (
-          <div>Loading, please wait...</div>
+          <Spinner />
         ) : (
           <div style={{ display: 'flex', flexFlow: 'row wrap' }}>
             {this.state.items.map((card) => (
