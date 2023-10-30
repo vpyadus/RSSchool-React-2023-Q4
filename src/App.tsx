@@ -1,9 +1,10 @@
 import { Component, ReactNode } from 'react';
-import Card, { CardProps } from './components/Card';
+import { ItemProps } from './components/Card';
 import Search from './components/Search';
 import BeerAPI from './api/BeerAPI';
 import Spinner from './components/Spinner';
 import ShowErrorButton from './components/ShowErrorButton';
+import ItemList from './components/ItemList';
 
 interface Props {
   children?: ReactNode;
@@ -11,7 +12,7 @@ interface Props {
 
 export interface AppState {
   isLoading: boolean;
-  items: Array<CardProps>;
+  items: Array<ItemProps>;
 }
 
 class App extends Component<Props, AppState> {
@@ -56,11 +57,7 @@ class App extends Component<Props, AppState> {
         {this.state.isLoading ? (
           <Spinner />
         ) : (
-          <div style={{ display: 'flex', flexFlow: 'row wrap' }}>
-            {this.state.items.map((card) => (
-              <Card key={card.id} {...card} />
-            ))}
-          </div>
+          <ItemList items={this.state.items} />
         )}
       </>
     );

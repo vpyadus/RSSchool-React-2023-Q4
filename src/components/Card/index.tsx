@@ -1,9 +1,9 @@
 import { Component, ReactNode } from 'react';
 import { BeerDetails } from '../../api/BeerAPI';
 
-export interface CardProps extends BeerDetails {}
+export interface ItemProps extends BeerDetails {}
 
-class Card extends Component<CardProps> {
+class Card extends Component<ItemProps> {
   render(): ReactNode {
     return (
       <>
