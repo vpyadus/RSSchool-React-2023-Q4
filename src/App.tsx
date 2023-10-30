@@ -2,8 +2,8 @@ import { Component, ReactNode } from 'react';
 import Card, { CardProps } from './components/Card';
 import Search from './components/Search';
 import BeerAPI from './api/BeerAPI';
-import TestError from './components/TestError';
 import Spinner from './components/Spinner';
+import ShowErrorButton from './components/ShowErrorButton';
 
 interface Props {
   children?: ReactNode;
@@ -12,14 +12,12 @@ interface Props {
 export interface AppState {
   isLoading: boolean;
   items: Array<CardProps>;
-  shouldShowError: boolean;
 }
 
 class App extends Component<Props, AppState> {
   state: AppState = {
     isLoading: true,
     items: [],
-    shouldShowError: false,
   };
 
   constructor(props = {}) {
@@ -40,19 +38,9 @@ class App extends Component<Props, AppState> {
     this.runSearch(search);
   }
 
-  showError(): void {
-    this.setState((prevState) => {
-      return {
-        ...prevState,
-        shouldShowError: true,
-      };
-    });
-  }
-
   render(): ReactNode {
     return (
       <>
-        {this.state.shouldShowError && <TestError />}
         <div
           style={{
             display: 'flex',
@@ -63,7 +51,7 @@ class App extends Component<Props, AppState> {
           <Search
             searchHandler={(search: string) => this.searchHandler(search)}
           />
-          <button onClick={() => this.showError()}>Test Error Boundary</button>
+          <ShowErrorButton />
         </div>
         {this.state.isLoading ? (
           <Spinner />
