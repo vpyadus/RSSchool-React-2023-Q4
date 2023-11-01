@@ -5,6 +5,7 @@ import BeerAPI from './api/BeerAPI';
 import Spinner from './components/Spinner';
 import ShowErrorButton from './components/ShowErrorButton';
 import ItemList from './components/ItemList';
+import ErrorBoundary from './components/ErrorBoundary';
 
 export interface AppState {
   isLoading: boolean;
@@ -27,7 +28,7 @@ const App = () => {
   };
 
   return (
-    <>
+    <ErrorBoundary>
       <header
         style={{
           display: 'flex',
@@ -48,7 +49,7 @@ const App = () => {
         {!isLoading &&
           (items.length ? <ItemList items={items} /> : 'Nothing found')}
       </main>
-    </>
+    </ErrorBoundary>
   );
 };
 
