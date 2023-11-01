@@ -1,13 +1,10 @@
-import { Component, ReactNode } from 'react';
+import { useEffect } from 'react';
 
-class TestError extends Component {
-  componentDidMount(): void {
+const TestError = () => {
+  useEffect(() => {
     throw new Error('Test Error');
-  }
-
-  render(): ReactNode {
-    return <></>;
-  }
-}
+  }, []);
+  return <></>;
+};
 
 export default TestError;

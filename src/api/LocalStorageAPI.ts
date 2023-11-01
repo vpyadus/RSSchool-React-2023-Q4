@@ -5,7 +5,7 @@ class LocalStorageAPI {
     localStorage.setItem(lsItemName, search);
   }
   static getSearchString(): string {
-    return localStorage.getItem(lsItemName) || '';
+    return localStorage.getItem(lsItemName) ?? '';
   }
 }
 
