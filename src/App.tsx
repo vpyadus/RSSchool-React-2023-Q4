@@ -18,14 +18,14 @@ const App = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const currentItemId = searchParams.get('details') ?? '';
-  const currentPageNum = searchParams.get('page') ?? 1;
+  const currentPageNum = searchParams.get('page') ?? '1';
 
   const [page, setPage] = useState<number>(Number(currentPageNum));
   const [selectedItemId, setSelectedItemId] = useState<number>(
     Number(currentItemId)
   );
 
-  const searchHandler: SearchHandlerFunc = (search) => {
+  const searchHandler: SearchHandlerFunc = (search): void => {
     setSearchQuery(search);
     const updatedParams = upsertSearchParam(searchParams, 'page', '1');
     setSearchParams(updatedParams);
