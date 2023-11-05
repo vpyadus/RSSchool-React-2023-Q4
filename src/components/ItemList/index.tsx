@@ -3,16 +3,16 @@ import Card from '../Card';
 
 export interface ItemListProps {
   items: Array<BeerDetails>;
-  selectItemHandler: (itemId: number) => void;
+  onItemSelect: (itemId: number) => void;
 }
 
 const ItemList = (props: ItemListProps) => {
-  const { items, selectItemHandler } = props;
+  const { items, onItemSelect } = props;
   return (
     <>
       <div style={{ display: 'flex', flexFlow: 'row wrap' }}>
         {items.map((card) => (
-          <Card key={card.id} {...card} selectItemHandler={selectItemHandler} />
+          <Card key={card.id} {...card} onClick={() => onItemSelect(card.id)} />
         ))}
       </div>
     </>

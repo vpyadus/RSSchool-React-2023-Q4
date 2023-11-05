@@ -1,11 +1,11 @@
 import { BeerDetails } from '../../api/BeerAPI';
 
 export interface ItemProps extends BeerDetails {
-  selectItemHandler: (itemId: number) => void;
+  onClick: () => void;
 }
 
 const Card = (props: ItemProps) => {
-  const { id, name, description, image_url, selectItemHandler } = props;
+  const { name, description, image_url, onClick } = props;
 
   return (
     <>
@@ -19,7 +19,7 @@ const Card = (props: ItemProps) => {
           margin: '5px',
           padding: '5px',
         }}
-        onClick={() => selectItemHandler(id)}
+        onClick={onClick}
       >
         <div style={{ padding: '20px' }}>
           <img src={image_url} width="60px" />

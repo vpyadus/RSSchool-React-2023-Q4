@@ -8,17 +8,16 @@ import { OutletContextParams } from '../../App';
 const ItemDetails = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [item, setItem] = useState<BeerDetails>({} as BeerDetails);
-  const { currentItemId, hideItemDetails } =
-    useOutletContext<OutletContextParams>();
+  const { itemId, hideItemDetails } = useOutletContext<OutletContextParams>();
 
   useEffect(() => {
     const fetchItem = async (): Promise<void> => {
-      const data = await BeerAPI.fetchItem(currentItemId);
+      const data = await BeerAPI.fetchItem(itemId);
       setIsLoading(false);
       setItem(data);
     };
-    if (currentItemId) fetchItem();
-  }, [currentItemId]);
+    if (itemId) fetchItem();
+  }, [itemId]);
 
   return (
     <>
