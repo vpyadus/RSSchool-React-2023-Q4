@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ItemProps } from './components/Card';
 import Search, { SearchHandlerFunc } from './components/Search';
 import BeerAPI, { SearchParams } from './api/BeerAPI';
@@ -7,6 +7,7 @@ import ShowErrorButton from './components/ShowErrorButton';
 import ItemList from './components/ItemList';
 import ErrorBoundary from './components/ErrorBoundary';
 import Pagination from './components/Pagination';
+import { useSearchParams } from 'react-router-dom';
 
 const App = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -16,6 +17,13 @@ const App = () => {
 
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const setSearchParamsRef = useRef(setSearchParams);
+
+  useEffect(() => {
+    setSearchParamsRef.current({ ...searchParams, page: String(page) });
+  }, [searchParams, page]);
 
   const getData = async (params: SearchParams): Promise<void> => {
     const data = await BeerAPI.fetchData(params);
@@ -52,15 +60,14 @@ const App = () => {
         }}
       >
         {isLoading && <Spinner />}
+        {!isLoading && (
+          <Pagination
+            {...{ page, perPage, setPage, setPerPage }}
+            isLastPage={items.length === 0}
+          />
+        )}
         {!isLoading &&
-          (items.length ? (
-            <>
-              <Pagination {...{ page, perPage, setPage, setPerPage }} />
-              <ItemList items={items} />
-            </>
-          ) : (
-            'Nothing found'
-          ))}
+          (items.length ? <ItemList items={items} /> : 'Nothing found')}
       </main>
     </ErrorBoundary>
   );

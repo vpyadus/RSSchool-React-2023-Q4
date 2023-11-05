@@ -5,10 +5,11 @@ export interface PaginationProps {
   perPage: number;
   setPage: (page: number) => void;
   setPerPage: (perPage: number) => void;
+  isLastPage: boolean;
 }
 
 const Pagination = (props: PaginationProps) => {
-  const { page, perPage, setPage, setPerPage } = props;
+  const { page, perPage, setPage, setPerPage, isLastPage } = props;
   return (
     <div
       style={{
@@ -43,7 +44,9 @@ const Pagination = (props: PaginationProps) => {
         <button disabled={page === 1} onClick={() => setPage(page - 1)}>
           Prev Page
         </button>
-        <button onClick={() => setPage(page + 1)}>Next Page</button>
+        <button disabled={isLastPage} onClick={() => setPage(page + 1)}>
+          Next Page
+        </button>
       </div>
       <div>Page #{page}</div>
     </div>
