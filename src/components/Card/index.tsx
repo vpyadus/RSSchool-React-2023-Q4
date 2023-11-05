@@ -1,21 +1,11 @@
-import { useSearchParams } from 'react-router-dom';
 import { BeerDetails } from '../../api/BeerAPI';
-import upsertSearchParam from '../../utils/upsertSearchParam';
 
-export interface ItemProps extends BeerDetails {}
+export interface ItemProps extends BeerDetails {
+  selectItemHandler: (itemId: number) => void;
+}
 
 const Card = (props: ItemProps) => {
-  const { id, name, description, image_url } = props;
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const handleSelectItem = (itemId: number): void => {
-    const updatedParams = upsertSearchParam(
-      searchParams,
-      'details',
-      String(itemId)
-    );
-    setSearchParams(updatedParams);
-  };
+  const { id, name, description, image_url, selectItemHandler } = props;
 
   return (
     <>
@@ -29,7 +19,7 @@ const Card = (props: ItemProps) => {
           margin: '5px',
           padding: '5px',
         }}
-        onClick={() => handleSelectItem(id)}
+        onClick={() => selectItemHandler(id)}
       >
         <div style={{ padding: '20px' }}>
           <img src={image_url} width="60px" />
