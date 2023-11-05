@@ -3,13 +3,13 @@ import { ChangeEvent } from 'react';
 export interface PaginationProps {
   page: number;
   perPage: number;
-  setPage: (page: number) => void;
-  setPerPage: (perPage: number) => void;
+  onPageChange: (newPage: number) => void;
+  onPerPageChange: (newPerPage: number) => void;
   isLastPage: boolean;
 }
 
 const Pagination = (props: PaginationProps) => {
-  const { page, perPage, setPage, setPerPage, isLastPage } = props;
+  const { page, perPage, onPageChange, onPerPageChange, isLastPage } = props;
   return (
     <div
       style={{
@@ -23,8 +23,7 @@ const Pagination = (props: PaginationProps) => {
         <select
           defaultValue={String(perPage)}
           onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-            setPerPage(Number(e.target.value));
-            setPage(1);
+            onPerPageChange(Number(e.target.value));
           }}
         >
           <option value="5">5</option>
@@ -41,10 +40,10 @@ const Pagination = (props: PaginationProps) => {
           flexGrow: '2',
         }}
       >
-        <button disabled={page === 1} onClick={() => setPage(page - 1)}>
+        <button disabled={page === 1} onClick={() => onPageChange(page - 1)}>
           Prev Page
         </button>
-        <button disabled={isLastPage} onClick={() => setPage(page + 1)}>
+        <button disabled={isLastPage} onClick={() => onPageChange(page + 1)}>
           Next Page
         </button>
       </div>

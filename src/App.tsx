@@ -1,44 +1,24 @@
-import { useEffect, useRef, useState } from 'react';
-import { ItemProps } from './components/Card';
+import { useState } from 'react';
 import Search, { SearchHandlerFunc } from './components/Search';
-import BeerAPI, { SearchParams } from './api/BeerAPI';
-import Spinner from './components/Spinner';
 import ShowErrorButton from './components/ShowErrorButton';
-import ItemList from './components/ItemList';
 import ErrorBoundary from './components/ErrorBoundary';
-import Pagination from './components/Pagination';
 import { useSearchParams } from 'react-router-dom';
+import MainPage from './components/MainPage';
 
 const App = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [items, setItems] = useState<Array<ItemProps>>([]);
-
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const [page, setPage] = useState<number>(1);
-  const [perPage, setPerPage] = useState<number>(10);
-
   const [searchParams, setSearchParams] = useSearchParams();
-  const setSearchParamsRef = useRef(setSearchParams);
 
-  useEffect(() => {
-    setSearchParamsRef.current({ ...searchParams, page: String(page) });
-  }, [searchParams, page]);
-
-  const getData = async (params: SearchParams): Promise<void> => {
-    const data = await BeerAPI.fetchData(params);
-    setIsLoading(false);
-    setItems(data);
-  };
-
-  useEffect(() => {
-    setIsLoading(true);
-    getData({ page, per_page: perPage, beer_name: searchQuery });
-  }, [page, perPage, searchQuery]);
+  const currentPage = Number(searchParams.get('page'));
 
   const searchHandler: SearchHandlerFunc = (search) => {
     setSearchQuery(search);
-    setPage(1);
+    setSearchParams({ ...searchParams, page: '1' });
+  };
+
+  const pageChangeHandler = (newPage: number): void => {
+    setSearchParams({ ...searchParams, page: String(newPage) });
   };
 
   return (
@@ -59,15 +39,7 @@ const App = () => {
           padding: '10px',
         }}
       >
-        {isLoading && <Spinner />}
-        {!isLoading && (
-          <Pagination
-            {...{ page, perPage, setPage, setPerPage }}
-            isLastPage={items.length === 0}
-          />
-        )}
-        {!isLoading &&
-          (items.length ? <ItemList items={items} /> : 'Nothing found')}
+        <MainPage {...{ searchQuery, currentPage, pageChangeHandler }} />
       </main>
     </ErrorBoundary>
   );
