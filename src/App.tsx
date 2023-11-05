@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import Search, { SearchHandlerFunc } from './components/Search';
 import ShowErrorButton from './components/ShowErrorButton';
-import ErrorBoundary from './components/ErrorBoundary';
-import { useSearchParams } from 'react-router-dom';
+import { Outlet, useSearchParams } from 'react-router-dom';
 import MainPage from './components/MainPage';
+import upsertSearchParam from './utils/upsertSearchParam';
+import removeSearchParam from './utils/removeSearchParam';
+
+export interface OutletContextParams {
+  currentItemId: string;
+  hideItemDetails: () => void;
+}
 
 const App = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -11,18 +17,21 @@ const App = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const currentPage = Number(searchParams.get('page'));
+  const currentItemId = searchParams.get('details');
 
   const searchHandler: SearchHandlerFunc = (search) => {
     setSearchQuery(search);
-    setSearchParams({ ...searchParams, page: '1' });
+    const updatedParams = upsertSearchParam(searchParams, 'page', '1');
+    setSearchParams(updatedParams);
   };
 
-  const pageChangeHandler = (newPage: number): void => {
-    setSearchParams({ ...searchParams, page: String(newPage) });
+  const hideItemDetails = (): void => {
+    const updatedParams = removeSearchParam(searchParams, 'details');
+    setSearchParams(updatedParams);
   };
 
   return (
-    <ErrorBoundary>
+    <>
       <header
         style={{
           display: 'flex',
@@ -39,9 +48,14 @@ const App = () => {
           padding: '10px',
         }}
       >
-        <MainPage {...{ searchQuery, currentPage, pageChangeHandler }} />
+        <MainPage {...{ searchQuery, currentPage }} />
       </main>
-    </ErrorBoundary>
+      {!!currentItemId && (
+        <Outlet
+          context={{ currentItemId, hideItemDetails } as OutletContextParams}
+        />
+      )}
+    </>
   );
 };
 
