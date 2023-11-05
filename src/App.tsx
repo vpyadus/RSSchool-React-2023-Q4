@@ -1,30 +1,36 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ItemProps } from './components/Card';
 import Search, { SearchHandlerFunc } from './components/Search';
-import BeerAPI from './api/BeerAPI';
+import BeerAPI, { SearchParams } from './api/BeerAPI';
 import Spinner from './components/Spinner';
 import ShowErrorButton from './components/ShowErrorButton';
 import ItemList from './components/ItemList';
 import ErrorBoundary from './components/ErrorBoundary';
-
-export interface AppState {
-  isLoading: boolean;
-  items: Array<ItemProps>;
-}
+import Pagination from './components/Pagination';
 
 const App = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [items, setItems] = useState<Array<ItemProps>>([]);
 
-  const runSearch = async (searchQuery: string): Promise<void> => {
-    const data = await BeerAPI.fetchData({ beer_name: searchQuery });
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const [page, setPage] = useState<number>(1);
+  const [perPage, setPerPage] = useState<number>(10);
+
+  const getData = async (params: SearchParams): Promise<void> => {
+    const data = await BeerAPI.fetchData(params);
     setIsLoading(false);
     setItems(data);
   };
 
-  const searchHandler: SearchHandlerFunc = (search) => {
+  useEffect(() => {
     setIsLoading(true);
-    runSearch(search);
+    getData({ page, per_page: perPage, beer_name: searchQuery });
+  }, [page, perPage, searchQuery]);
+
+  const searchHandler: SearchHandlerFunc = (search) => {
+    setSearchQuery(search);
+    setPage(1);
   };
 
   return (
@@ -37,7 +43,7 @@ const App = () => {
           padding: '10px',
         }}
       >
-        <Search searchHandler={searchHandler} />
+        <Search {...{ searchQuery, searchHandler }} />
         <ShowErrorButton />
       </header>
       <main
@@ -47,7 +53,14 @@ const App = () => {
       >
         {isLoading && <Spinner />}
         {!isLoading &&
-          (items.length ? <ItemList items={items} /> : 'Nothing found')}
+          (items.length ? (
+            <>
+              <Pagination {...{ page, perPage, setPage, setPerPage }} />
+              <ItemList items={items} />
+            </>
+          ) : (
+            'Nothing found'
+          ))}
       </main>
     </ErrorBoundary>
   );

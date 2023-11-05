@@ -1,10 +1,6 @@
 import { useState } from 'react';
 import TestError from '../TestError';
 
-export interface ShowErrorButtonState {
-  shouldShowError: boolean;
-}
-
 const ShowErrorButton = () => {
   const [shouldShowError, setShouldShowError] = useState<boolean>(false);
 

@@ -1,32 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import LocalStorageAPI from '../../api/LocalStorageAPI';
 
-export type SearchHandlerFunc = (search: string) => void;
+export type SearchHandlerFunc = (searchQuery: string) => void;
 
 export interface SearchProps {
+  searchQuery: string;
   searchHandler: SearchHandlerFunc;
 }
 
-export interface SearchState {
-  search: string;
-}
-
 const Search = (props: SearchProps) => {
-  const { searchHandler } = props;
-  const [searchQuery, setSearchQuery] = useState<string>(
-    LocalStorageAPI.getSearchString()
-  );
+  const { searchQuery, searchHandler } = props;
 
   const handlerRef = useRef<SearchHandlerFunc>(searchHandler);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    handlerRef.current(searchQuery);
-  }, [searchQuery]);
+    handlerRef.current(LocalStorageAPI.getSearchString());
+  }, []);
 
   const searchOnClick = (): void => {
     const search: string = inputRef.current?.value.trim() ?? '';
-    setSearchQuery(search);
+    searchHandler(search);
     LocalStorageAPI.saveSearchString(search);
   };
 
