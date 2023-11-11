@@ -12,7 +12,6 @@ export interface OutletContextParams {
 }
 
 const App = () => {
-  const [searchQuery, setSearchQuery] = useState<string>('');
   const [perPage, setPerPage] = useState<number>(10);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,8 +24,7 @@ const App = () => {
     Number(currentItemId)
   );
 
-  const searchHandler: SearchHandlerFunc = (search): void => {
-    setSearchQuery(search);
+  const afterSearchHandler: SearchHandlerFunc = (): void => {
     const updatedParams = upsertSearchParam(searchParams, 'page', '1');
     setSearchParams(updatedParams);
     setPage(1);
@@ -68,7 +66,7 @@ const App = () => {
           padding: '10px',
         }}
       >
-        <Search {...{ searchQuery, searchHandler }} />
+        <Search afterSearchHandler={afterSearchHandler} />
         <ShowErrorButton />
       </header>
       <main
@@ -78,7 +76,6 @@ const App = () => {
       >
         <MainPage
           {...{
-            searchQuery,
             page,
             setPage: pageChangeHandler,
             perPage,

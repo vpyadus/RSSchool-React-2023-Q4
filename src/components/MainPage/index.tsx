@@ -1,11 +1,12 @@
 import BeerAPI, { BeerDetails, SearchParams } from '../../api/BeerAPI';
 import Pagination from '../Pagination';
 import ItemList from '../ItemList';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import Spinner from '../Spinner';
+import { SearchContext } from '../../Context/SearchContext';
+import { ItemsContext } from '../../Context/ItemsContext';
 
 export interface MainPageProps {
-  searchQuery: string;
   page: number;
   setPage: (newPage: number) => void;
   perPage: number;
@@ -14,19 +15,21 @@ export interface MainPageProps {
 }
 
 const MainPage = (props: MainPageProps) => {
-  const { searchQuery, page, setPage, perPage, setPerPage, onItemSelect } =
-    props;
+  const { page, setPage, perPage, setPerPage, onItemSelect } = props;
+
+  const { searchQuery } = useContext(SearchContext);
+  const { items, setItems } = useContext(ItemsContext);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [items, setItems] = useState<Array<BeerDetails>>([]);
 
-  const getData = async (params: SearchParams): Promise<void> => {
-    const data = await BeerAPI.fetchData(params);
-    setIsLoading(false);
-    setItems(data);
-  };
+  const setItemsRef = useRef<(items: Array<BeerDetails>) => void>(setItems);
 
   useEffect(() => {
+    const getData = async (params: SearchParams): Promise<void> => {
+      const data: Array<BeerDetails> = await BeerAPI.fetchData(params);
+      setIsLoading(false);
+      setItemsRef.current(data);
+    };
     setIsLoading(true);
     getData({ page, per_page: perPage, beer_name: searchQuery });
   }, [page, perPage, searchQuery]);
