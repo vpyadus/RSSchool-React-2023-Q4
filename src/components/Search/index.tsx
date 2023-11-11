@@ -12,7 +12,12 @@ const Search = (props: SearchProps) => {
   const { afterSearchHandler } = props;
   const { searchQuery, setSearchQuery } = useContext(SearchContext);
 
-  const handlerRef = useRef<SearchHandlerFunc>(afterSearchHandler);
+  const searchHandler = (search: string): void => {
+    setSearchQuery(search);
+    afterSearchHandler(search);
+  };
+
+  const handlerRef = useRef<SearchHandlerFunc>(searchHandler);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
