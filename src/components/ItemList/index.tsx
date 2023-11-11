@@ -10,11 +10,19 @@ const ItemList = (props: ItemListProps) => {
   const { items, onItemSelect } = props;
   return (
     <>
-      <div style={{ display: 'flex', flexFlow: 'row wrap' }}>
-        {items.map((card) => (
-          <Card key={card.id} {...card} onClick={() => onItemSelect(card.id)} />
-        ))}
-      </div>
+      {items.length ? (
+        <div style={{ display: 'flex', flexFlow: 'row wrap' }}>
+          {items.map((card) => (
+            <Card
+              key={card.id}
+              {...card}
+              onClick={() => onItemSelect(card.id)}
+            />
+          ))}
+        </div>
+      ) : (
+        <div>Nothing found</div>
+      )}
     </>
   );
 };

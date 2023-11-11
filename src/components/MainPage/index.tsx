@@ -49,12 +49,7 @@ const MainPage = (props: MainPageProps) => {
           isLastPage={items.length === 0 || items.length < perPage}
         />
       )}
-      {!isLoading &&
-        (items.length ? (
-          <ItemList {...{ items, onItemSelect }} />
-        ) : (
-          <div>Nothing found</div>
-        ))}
+      {!isLoading && <ItemList {...{ items, onItemSelect }} />}
     </>
   );
 };
