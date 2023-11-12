@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "prepare": "husky install",
     "test": "vitest run",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage.enabled --coverage.all"
   },
   "lint-staged": {
     "**/*.ts?(x)": ["yarn lint", "vitest related --run"]
