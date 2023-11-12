@@ -6,7 +6,7 @@ import { BeerDetails } from '../api/BeerAPI';
 
 const noopFunc: (param?: unknown) => void = () => {};
 
-describe('ItemList', () => {
+describe('Tests for Item List', () => {
   it('Renders list of 10 items', () => {
     render(
       <ItemList

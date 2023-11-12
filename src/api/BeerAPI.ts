@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const apiURL = 'https://api.punkapi.com/v2/beers/';
+export const apiURL = 'https://api.punkapi.com/v2/beers';
 
 export interface SearchParams {
   beer_name?: string;
@@ -34,7 +34,7 @@ class BeerAPI {
   }
 
   static async fetchItem(id: string): Promise<BeerDetails> {
-    const url: string = `${apiURL}${id}`;
+    const url: string = `${apiURL}/${id}`;
     return axios
       .get(url)
       .then((response) => response.data[0] ?? ({} as BeerDetails))

@@ -9,7 +9,7 @@ const Card = (props: ItemProps) => {
 
   return (
     <>
-      <div
+      <article
         style={{
           display: 'flex',
           maxWidth: '300px',
@@ -29,7 +29,7 @@ const Card = (props: ItemProps) => {
           <hr />
           <div>{description}</div>
         </div>
-      </div>
+      </article>
     </>
   );
 };
