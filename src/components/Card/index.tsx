@@ -1,4 +1,5 @@
 import { BeerDetails } from '../../api/BeerAPI';
+import './styles.css';
 
 export interface ItemProps extends BeerDetails {
   onClick: () => void;
@@ -9,18 +10,7 @@ const Card = (props: ItemProps) => {
 
   return (
     <>
-      <article
-        style={{
-          display: 'flex',
-          maxWidth: '300px',
-          borderWidth: '1px',
-          borderColor: 'black',
-          borderStyle: 'solid',
-          margin: '5px',
-          padding: '5px',
-        }}
-        onClick={onClick}
-      >
+      <article className="itemcard" onClick={onClick}>
         <div style={{ padding: '20px' }}>
           <img src={image_url} width="60px" />
         </div>
