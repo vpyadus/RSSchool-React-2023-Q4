@@ -7,18 +7,11 @@ import * as reactRouterDom from 'react-router-dom';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { appRoutes } from '../AppRouter';
+import { items } from './mocks';
 
 const noopFunc: (param?: unknown) => void = () => {};
 
-const item: BeerDetails = {
-  id: 2,
-  name: 'Trashy Blonde',
-  tagline: `You Know You Shouldn't`,
-  description:
-    'A titillating, neurotic, peroxide punk of a Pale Ale. Combining attitude, style, substance, and a little bit of low self esteem for good measure; what would your mother say? The seductive lure of the sassy passion fruit hop proves too much to resist. All that is even before we get onto the fact that there are no additives, preservatives, pasteurization or strings attached. All wrapped up with the customary BrewDog bite and imaginative twist.',
-  image_url: 'https://images.punkapi.com/v2/2.png',
-  first_brewed: '04/2008',
-};
+const item: BeerDetails = items[0];
 
 describe('Tests for Item Card', () => {
   const server = setupServer(
