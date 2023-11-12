@@ -1,3 +1,7 @@
+import axios from 'axios';
+
+export const apiURL = 'https://api.punkapi.com/v2/beers/';
+
 export interface SearchParams {
   beer_name?: string;
   page?: number;
@@ -19,10 +23,10 @@ class BeerAPI {
       .filter((key) => !!params[key as keyof SearchParams])
       .map((key) => `${key}=${params[key as keyof SearchParams]}`)
       .join('&');
-    const url: string = `https://api.punkapi.com/v2/beers?${urlSearchQuery}`;
-    return fetch(url)
-      .then((response) => response.json())
-      .then((data) => data)
+    const url: string = `${apiURL}?${urlSearchQuery}`;
+    return axios
+      .get(url)
+      .then((response) => response.data)
       .catch((error) => {
         console.error(error);
         return [] as BeerDetails[];
@@ -30,10 +34,10 @@ class BeerAPI {
   }
 
   static async fetchItem(id: string): Promise<BeerDetails> {
-    const url: string = `https://api.punkapi.com/v2/beers/${id}`;
-    return fetch(url)
-      .then((response) => response.json())
-      .then((data) => data[0] ?? ({} as BeerDetails))
+    const url: string = `${apiURL}${id}`;
+    return axios
+      .get(url)
+      .then((response) => response.data[0] ?? ({} as BeerDetails))
       .catch((error) => console.error(error));
   }
 }
