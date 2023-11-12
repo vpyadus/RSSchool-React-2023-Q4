@@ -10,8 +10,7 @@
     "format:fix": "prettier . --write",
     "preview": "vite preview",
     "prepare": "husky install",
-    "test": "vitest run",
-    "coverage": "vitest run --coverage.enabled --coverage.all"
+    "test": "vitest run --coverage.enabled --coverage.all"
   },
   "lint-staged": {
     "**/*.ts?(x)": "yarn lint"
