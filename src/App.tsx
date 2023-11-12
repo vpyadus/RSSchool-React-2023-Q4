@@ -25,13 +25,17 @@ const App = () => {
   );
 
   const afterSearchHandler: SearchHandlerFunc = (): void => {
-    const updatedParams = upsertSearchParam(searchParams, 'page', '1');
+    const updatedParams: URLSearchParams = upsertSearchParam(
+      searchParams,
+      'page',
+      '1'
+    );
     setSearchParams(updatedParams);
     setPage(1);
   };
 
   const pageChangeHandler = (newPage: number): void => {
-    const updatedParams = upsertSearchParam(
+    const updatedParams: URLSearchParams = upsertSearchParam(
       searchParams,
       'page',
       String(newPage)
