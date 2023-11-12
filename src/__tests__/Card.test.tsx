@@ -20,35 +20,38 @@ const item: BeerDetails = {
   first_brewed: '04/2008',
 };
 
-const server = setupServer(
-  rest.get(apiURL, (req, res, ctx) => {
-    return res(ctx.json([item]));
-  }),
-  rest.get(`${apiURL}/2`, (req, res, ctx) => {
-    return res(ctx.json([item]));
-  })
-);
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-
 describe('Tests for Item Card', () => {
+  const server = setupServer(
+    rest.get(apiURL, (req, res, ctx) => {
+      return res(ctx.json([item]));
+    }),
+    rest.get(`${apiURL}/${item.id}`, (req, res, ctx) => {
+      return res(ctx.json([item]));
+    })
+  );
+
+  beforeAll(() => server.listen());
+  afterEach(() => server.resetHandlers());
+  afterAll(() => server.close());
+
+  const useSearchParamsMock: typeof reactRouterDom.useSearchParams = () => {
+    return [
+      new URLSearchParams([['page', '1']]),
+      noopFunc as reactRouterDom.SetURLSearchParams,
+    ];
+  };
+
   it('Renders relevant card data', () => {
     render(<Card {...item} onClick={noopFunc} />);
 
-    expect(screen.getByText('Trashy Blonde')).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'A titillating, neurotic, peroxide punk of a Pale Ale. Combining attitude, style, substance, and a little bit of low self esteem for good measure; what would your mother say? The seductive lure of the sassy passion fruit hop proves too much to resist. All that is even before we get onto the fact that there are no additives, preservatives, pasteurization or strings attached. All wrapped up with the customary BrewDog bite and imaginative twist.'
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText(item.name)).toBeInTheDocument();
+    expect(screen.getByText(item.description)).toBeInTheDocument();
 
     const img: HTMLImageElement = document.querySelector(
       'img'
     ) as HTMLImageElement;
 
-    expect(img.src).toContain('https://images.punkapi.com/v2/2.png');
+    expect(img.src).toContain(item.image_url);
   });
 
   it('Click on the card opens its details', async () => {
@@ -56,42 +59,26 @@ describe('Tests for Item Card', () => {
       initialEntries: ['/'],
     });
 
-    const useSearchParamsMock: typeof reactRouterDom.useSearchParams = () => {
-      return [
-        new URLSearchParams([['page', '1']]),
-        noopFunc as reactRouterDom.SetURLSearchParams,
-      ];
-    };
-
     vi.spyOn(reactRouterDom, 'useSearchParams').mockImplementation(
       useSearchParamsMock
     );
 
     render(<RouterProvider router={testRouter} />);
 
-    await screen.findByRole('article');
-    expect(screen.getByRole('article')).toBeInTheDocument();
+    const card: HTMLElement = await screen.findByRole('article');
+    expect(card).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('article'));
+    fireEvent.click(card);
 
-    await screen.findByRole('heading', { level: 2 });
-    expect(screen.getByRole('heading', { level: 2 })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
-      'Trashy Blonde'
-    );
+    const detailsName = await screen.findByRole('heading', { level: 2 });
+    expect(detailsName).toBeInTheDocument();
+    expect(detailsName).toHaveTextContent(item.name);
   });
 
   it('Click on the card initiates an API call', async () => {
     const testRouter = createMemoryRouter(appRoutes, {
       initialEntries: ['/'],
     });
-
-    const useSearchParamsMock: typeof reactRouterDom.useSearchParams = () => {
-      return [
-        new URLSearchParams([['page', '1']]),
-        noopFunc as reactRouterDom.SetURLSearchParams,
-      ];
-    };
 
     vi.spyOn(reactRouterDom, 'useSearchParams').mockImplementation(
       useSearchParamsMock
@@ -103,10 +90,10 @@ describe('Tests for Item Card', () => {
 
     render(<RouterProvider router={testRouter} />);
 
-    await screen.findByRole('article');
-    expect(screen.getByRole('article')).toBeInTheDocument();
+    const card: HTMLElement = await screen.findByRole('article');
+    expect(card).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('article'));
+    fireEvent.click(card);
 
     expect(spyOnAPICall).toBeCalled();
   });

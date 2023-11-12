@@ -37,11 +37,11 @@ const ItemDetails = () => {
               </div>
               <div className="modalContent">
                 <h4>Tagline:</h4>
-                {item.tagline}
+                <span>{item.tagline}</span>
                 <h4>Description:</h4>
-                {item.description}
+                <span>{item.description}</span>
                 <h4>First brewed:</h4>
-                {item.first_brewed}
+                <span>{item.first_brewed}</span>
               </div>
             </>
           )}
