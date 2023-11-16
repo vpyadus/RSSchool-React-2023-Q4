@@ -1,6 +1,7 @@
-import { useContext, useEffect, useRef } from 'react';
-import LocalStorageAPI from '../../api/LocalStorageAPI';
-import { SearchContext } from '../../Context/SearchContext';
+import { useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, StoreState } from '../../store/store';
+import { setSearchQuery } from '../../features/searchSlice/searchSlice';
 
 export type SearchHandlerFunc = (searchQuery: string) => void;
 
@@ -10,25 +11,17 @@ export interface SearchProps {
 
 const Search = (props: SearchProps) => {
   const { afterSearchHandler } = props;
-  const { searchQuery, setSearchQuery } = useContext(SearchContext);
+  const searchQuery: string = useSelector(
+    (state: StoreState) => state.search.searchQuery
+  );
+  const dispatch: AppDispatch = useDispatch();
 
-  const searchHandler = (search: string): void => {
-    setSearchQuery(search);
-    afterSearchHandler(search);
-  };
-
-  const handlerRef = useRef<SearchHandlerFunc>(searchHandler);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    handlerRef.current(LocalStorageAPI.getSearchString());
-  }, []);
 
   const searchOnClick = (): void => {
     const search: string = inputRef.current?.value.trim() ?? '';
-    setSearchQuery(search);
+    dispatch(setSearchQuery(search));
     afterSearchHandler(search);
-    LocalStorageAPI.saveSearchString(search);
   };
 
   return (

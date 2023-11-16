@@ -2,9 +2,10 @@ import BeerAPI, { BeerDetails, SearchParams } from '../../api/BeerAPI';
 import Pagination from '../Pagination';
 import ItemList from '../ItemList';
 import { useContext, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import Spinner from '../Spinner';
-import { SearchContext } from '../../Context/SearchContext';
 import { ItemsContext } from '../../Context/ItemsContext';
+import { StoreState } from '../../store/store';
 
 export interface MainPageProps {
   page: number;
@@ -17,7 +18,10 @@ export interface MainPageProps {
 const MainPage = (props: MainPageProps) => {
   const { page, setPage, perPage, setPerPage, onItemSelect } = props;
 
-  const { searchQuery } = useContext(SearchContext);
+  const searchQuery: string = useSelector(
+    (state: StoreState) => state.search.searchQuery
+  );
+
   const { items, setItems } = useContext(ItemsContext);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);

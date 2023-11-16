@@ -6,3 +6,6 @@ export const store = configureStore({
     search: searchReducer,
   },
 });
+
+export type AppDispatch = typeof store.dispatch;
+export type StoreState = ReturnType<typeof store.getState>;
