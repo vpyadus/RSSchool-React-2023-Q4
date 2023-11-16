@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, StoreState } from './store/store';
 import Search, { SearchHandlerFunc } from './components/Search';
 import ShowErrorButton from './components/ShowErrorButton';
 import { Outlet, useSearchParams } from 'react-router-dom';
 import MainPage from './components/MainPage';
 import upsertSearchParam from './utils/upsertSearchParam';
 import removeSearchParam from './utils/removeSearchParam';
+import { setItemsPerPage } from './features/itemsPerPageSlice/itemsPerPageSlice';
 
 export interface OutletContextParams {
   itemId: string;
@@ -12,7 +15,12 @@ export interface OutletContextParams {
 }
 
 const App = () => {
-  const [perPage, setPerPage] = useState<number>(10);
+  const perPage: number = useSelector(
+    (state: StoreState) => state.perPage.perPage
+  );
+  const dispatch: AppDispatch = useDispatch();
+  const setPerPage = (newPerPage: number) =>
+    dispatch(setItemsPerPage(newPerPage));
 
   const [searchParams, setSearchParams] = useSearchParams();
 
