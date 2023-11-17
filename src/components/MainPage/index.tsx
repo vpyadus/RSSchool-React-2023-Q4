@@ -2,46 +2,55 @@ import { BeerDetails, useFetchDataQuery } from '../../api/BeerAPI';
 import Pagination from '../Pagination';
 import ItemList from '../ItemList';
 import Spinner from '../Spinner';
-import { useSelector } from 'react-redux';
-import { StoreState } from '../../store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, StoreState } from '../../store/store';
+import { setIsLoadingMainPageFlag } from '../../features/loadingFlagsSlice/loadingFlagsSlice';
+import { useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 export interface MainPageProps {
-  page: number;
-  setPage: (newPage: number) => void;
-  perPage: number;
-  setPerPage: (value: number) => void;
   onItemSelect: (itemId: number) => void;
 }
 
 const MainPage = (props: MainPageProps) => {
-  const { page, setPage, perPage, setPerPage, onItemSelect } = props;
+  const { onItemSelect } = props;
+
+  const [searchParams] = useSearchParams();
+  const page: number = Number(searchParams.get('page')) ?? 1;
+
+  const perPage: number = useSelector(
+    (state: StoreState) => state.perPage.perPage
+  );
 
   const searchQuery: string = useSelector(
     (state: StoreState) => state.search.searchQuery
   );
 
-  const { data = [] as BeerDetails[], isLoading } = useFetchDataQuery({
+  const isLoadingMainPage: boolean = useSelector(
+    (state: StoreState) => state.loadingFlags.isLoadingMainPage
+  );
+
+  const { data: items = [] as BeerDetails[], isFetching } = useFetchDataQuery({
     page,
     per_page: perPage,
     beer_name: searchQuery,
   });
 
+  const dispatchRef = useRef<AppDispatch>();
+  dispatchRef.current = useDispatch();
+
+  useEffect(() => {
+    dispatchRef.current &&
+      dispatchRef.current(setIsLoadingMainPageFlag(isFetching));
+  }, [isFetching]);
+
   return (
     <>
-      {isLoading && <Spinner />}
-      {!isLoading && (
-        <Pagination
-          page={page}
-          perPage={perPage}
-          onPageChange={setPage}
-          onPerPageChange={(newPerPage) => {
-            setPerPage(newPerPage);
-            setPage(1);
-          }}
-          isLastPage={data.length === 0 || data.length < perPage}
-        />
+      {isLoadingMainPage && <Spinner />}
+      {!isLoadingMainPage && (
+        <Pagination isLastPage={items.length === 0 || items.length < perPage} />
       )}
-      {!isLoading && <ItemList {...{ items: data, onItemSelect }} />}
+      {!isLoadingMainPage && <ItemList {...{ items, onItemSelect }} />}
     </>
   );
 };
