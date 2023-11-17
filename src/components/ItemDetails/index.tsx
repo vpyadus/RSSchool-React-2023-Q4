@@ -1,23 +1,14 @@
-import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import BeerAPI, { BeerDetails } from '../../api/BeerAPI';
+import { BeerDetails, useFetchItemQuery } from '../../api/BeerAPI';
 import Spinner from '../Spinner';
 import './styles.css';
 import { OutletContextParams } from '../../App';
 
 const ItemDetails = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [item, setItem] = useState<BeerDetails>({} as BeerDetails);
   const { itemId, hideItemDetails } = useOutletContext<OutletContextParams>();
 
-  useEffect(() => {
-    const fetchItem = async (): Promise<void> => {
-      const data = await BeerAPI.fetchItem(itemId);
-      setIsLoading(false);
-      setItem(data);
-    };
-    if (itemId) fetchItem();
-  }, [itemId]);
+  const { data = [] as BeerDetails[], isLoading } = useFetchItemQuery(itemId);
+  const item: BeerDetails = data[0] ?? {};
 
   return (
     <>

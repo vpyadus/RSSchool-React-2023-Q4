@@ -1,6 +1,6 @@
-import axios from 'axios';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-export const apiURL = 'https://api.punkapi.com/v2/beers';
+export const apiURL = 'https://api.punkapi.com/v2/beers/';
 
 export interface SearchParams {
   beer_name?: string;
@@ -17,29 +17,23 @@ export interface BeerDetails {
   first_brewed: string;
 }
 
-class BeerAPI {
-  static async fetchData(params: SearchParams): Promise<BeerDetails[]> {
-    const urlSearchQuery: string = Object.keys(params)
-      .filter((key) => !!params[key as keyof SearchParams])
-      .map((key) => `${key}=${params[key as keyof SearchParams]}`)
-      .join('&');
-    const url: string = `${apiURL}?${urlSearchQuery}`;
-    return axios
-      .get(url)
-      .then((response) => response.data)
-      .catch((error) => {
-        console.error(error);
-        return [] as BeerDetails[];
-      });
-  }
+export const beerAPI = createApi({
+  reducerPath: 'beerApi',
+  baseQuery: fetchBaseQuery({ baseUrl: apiURL }),
+  endpoints: (builder) => ({
+    fetchData: builder.query<BeerDetails[], SearchParams>({
+      query: (params: SearchParams) => {
+        const urlSearchQuery: string = Object.keys(params)
+          .filter((key) => !!params[key as keyof SearchParams])
+          .map((key) => `${key}=${params[key as keyof SearchParams]}`)
+          .join('&');
+        return `?${urlSearchQuery}`;
+      },
+    }),
+    fetchItem: builder.query<BeerDetails[], string>({
+      query: (id: string) => id,
+    }),
+  }),
+});
 
-  static async fetchItem(id: string): Promise<BeerDetails> {
-    const url: string = `${apiURL}/${id}`;
-    return axios
-      .get(url)
-      .then((response) => response.data[0] ?? ({} as BeerDetails))
-      .catch((error) => console.error(error));
-  }
-}
-
-export default BeerAPI;
+export const { useFetchDataQuery, useFetchItemQuery } = beerAPI;

@@ -1,10 +1,8 @@
-import BeerAPI, { BeerDetails, SearchParams } from '../../api/BeerAPI';
+import { BeerDetails, useFetchDataQuery } from '../../api/BeerAPI';
 import Pagination from '../Pagination';
 import ItemList from '../ItemList';
-import { useContext, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import Spinner from '../Spinner';
-import { ItemsContext } from '../../Context/ItemsContext';
+import { useSelector } from 'react-redux';
 import { StoreState } from '../../store/store';
 
 export interface MainPageProps {
@@ -22,21 +20,11 @@ const MainPage = (props: MainPageProps) => {
     (state: StoreState) => state.search.searchQuery
   );
 
-  const { items, setItems } = useContext(ItemsContext);
-
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  const setItemsRef = useRef<(items: Array<BeerDetails>) => void>(setItems);
-
-  useEffect(() => {
-    const getData = async (params: SearchParams): Promise<void> => {
-      const data: Array<BeerDetails> = await BeerAPI.fetchData(params);
-      setIsLoading(false);
-      setItemsRef.current(data);
-    };
-    setIsLoading(true);
-    getData({ page, per_page: perPage, beer_name: searchQuery });
-  }, [page, perPage, searchQuery]);
+  const { data = [] as BeerDetails[], isLoading } = useFetchDataQuery({
+    page,
+    per_page: perPage,
+    beer_name: searchQuery,
+  });
 
   return (
     <>
@@ -50,10 +38,10 @@ const MainPage = (props: MainPageProps) => {
             setPerPage(newPerPage);
             setPage(1);
           }}
-          isLastPage={items.length === 0 || items.length < perPage}
+          isLastPage={data.length === 0 || data.length < perPage}
         />
       )}
-      {!isLoading && <ItemList {...{ items, onItemSelect }} />}
+      {!isLoading && <ItemList {...{ items: data, onItemSelect }} />}
     </>
   );
 };
