@@ -3,20 +3,36 @@ import { BeerDetails, useFetchItemQuery } from '../../api/BeerAPI';
 import Spinner from '../Spinner';
 import './styles.css';
 import { OutletContextParams } from '../../App';
+import { useEffect, useRef } from 'react';
+import { AppDispatch, StoreState } from '../../store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { setIsLoadingDetailsPageFlag } from '../../features/loadingFlagsSlice/loadingFlagsSlice';
 
 const ItemDetails = () => {
   const { itemId, hideItemDetails } = useOutletContext<OutletContextParams>();
 
+  const isLoadingDetailsPage: boolean = useSelector(
+    (state: StoreState) => state.loadingFlags.isLoadingDetailsPage
+  );
+
   const { data = [] as BeerDetails[], isLoading } = useFetchItemQuery(itemId);
   const item: BeerDetails = data[0] ?? {};
+
+  const dispatchRef = useRef<AppDispatch>();
+  dispatchRef.current = useDispatch();
+
+  useEffect(() => {
+    dispatchRef.current &&
+      dispatchRef.current(setIsLoadingDetailsPageFlag(isLoading));
+  }, [isLoading]);
 
   return (
     <>
       <div className="overlay" onClick={hideItemDetails} />
       <div className="container">
         <div className="modal">
-          {isLoading && <Spinner />}
-          {!isLoading && (
+          {isLoadingDetailsPage && <Spinner />}
+          {!isLoadingDetailsPage && (
             <>
               <button className="closeBtn" onClick={hideItemDetails}>
                 Close
