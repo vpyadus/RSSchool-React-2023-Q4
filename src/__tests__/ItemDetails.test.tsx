@@ -1,35 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { useState } from 'react';
-import BeerAPI, { BeerDetails, apiURL } from '../api/BeerAPI';
+import { BeerDetails } from '../api/BeerAPI';
 import {
   Outlet,
   RouteObject,
   createMemoryRouter,
   RouterProvider,
 } from 'react-router-dom';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
 import ItemDetails from '../components/ItemDetails';
 import { OutletContextParams } from '../App';
 import { items } from './mocks';
+import { Provider } from 'react-redux';
+import { store } from '../store/store';
 
 const item: BeerDetails = items[0];
 
 describe('Tests for Item Details', () => {
-  const server = setupServer(
-    rest.get(apiURL, (req, res, ctx) => {
-      return res(ctx.json([item]));
-    }),
-    rest.get(`${apiURL}/${item.id}`, (req, res, ctx) => {
-      return res(ctx.json([item]));
-    })
-  );
-
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
-
   const TestApp = () => {
     const [shouldShowOutlet, setShouldShowOutlet] = useState<boolean>(true);
     const testOutletContext: OutletContextParams = {
@@ -42,7 +29,11 @@ describe('Tests for Item Details', () => {
   const testRoutes: Array<RouteObject> = [
     {
       path: '/',
-      element: <TestApp />,
+      element: (
+        <Provider store={store}>
+          <TestApp />
+        </Provider>
+      ),
       children: [
         {
           index: true,
@@ -52,17 +43,11 @@ describe('Tests for Item Details', () => {
     },
   ];
   const testRouter = createMemoryRouter(testRoutes, {
-    initialEntries: ['/'],
+    initialEntries: [`/`],
   });
 
   it('Spinner is displayed while fetching data', async () => {
-    const spyOnAPICall = vi
-      .spyOn(BeerAPI, 'fetchItem')
-      .mockImplementation(async () => item);
-
     render(<RouterProvider router={testRouter} />);
-
-    expect(spyOnAPICall).toBeCalled();
 
     const loaderDiv: HTMLElement = document.querySelector(
       '.loader'

@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, StoreState } from '../../store/store';
 import { setSearchQuery } from '../../features/searchSlice/searchSlice';
+import LocalStorageAPI from '../../api/LocalStorageAPI';
 
 export type SearchHandlerFunc = (searchQuery: string) => void;
 
@@ -22,6 +23,7 @@ const Search = (props: SearchProps) => {
     const search: string = inputRef.current?.value.trim() ?? '';
     dispatch(setSearchQuery(search));
     afterSearchHandler(search);
+    LocalStorageAPI.saveSearchString(search);
   };
 
   return (

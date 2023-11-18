@@ -12,7 +12,7 @@ const Card = (props: ItemProps) => {
     <>
       <article className="itemcard" onClick={onClick}>
         <div style={{ padding: '20px' }}>
-          <img src={image_url} width="60px" />
+          <img src={image_url} width="60px" alt={name} />
         </div>
         <div>
           <h3>{name}</h3>

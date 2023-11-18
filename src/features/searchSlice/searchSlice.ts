@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction, Slice } from '@reduxjs/toolkit';
+import LocalStorageAPI from '../../api/LocalStorageAPI';
 
 export interface SearchSliceState {
   searchQuery: string;
 }
 
 const initialState: SearchSliceState = {
-  searchQuery: '',
+  searchQuery: LocalStorageAPI.getSearchString(),
 };
 
 export const searchSlice: Slice<SearchSliceState> = createSlice({

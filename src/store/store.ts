@@ -3,8 +3,9 @@ import searchReducer from '../features/searchSlice/searchSlice';
 import itemsPerPageReducer from '../features/itemsPerPageSlice/itemsPerPageSlice';
 import loadingFlagsReducer from '../features/loadingFlagsSlice/loadingFlagsSlice';
 import { beerAPI } from '../api/BeerAPI';
+import { ToolkitStore } from '@reduxjs/toolkit/dist/configureStore';
 
-export const store = configureStore({
+export const store: ToolkitStore = configureStore({
   reducer: {
     search: searchReducer,
     perPage: itemsPerPageReducer,

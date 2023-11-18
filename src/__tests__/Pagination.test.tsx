@@ -1,30 +1,42 @@
 import { describe, expect, it } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
-import Pagination, { PaginationProps } from '../components/Pagination';
-
-const noopFunc: (param?: unknown) => void = () => {};
+import Pagination from '../components/Pagination';
+import {
+  RouteObject,
+  RouterProvider,
+  createMemoryRouter,
+} from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from '../store/store';
 
 describe('Tests for Pagination', () => {
   it('Page change updates URL query parameters', () => {
-    let mockQueryParam = `?page=5`;
-    const testPaginationProps: PaginationProps = {
-      page: 5,
-      perPage: 10,
-      onPageChange: (newPage: number) => {
-        mockQueryParam = `?page=${newPage}`;
+    const testRoutes: Array<RouteObject> = [
+      {
+        path: '/',
+        element: (
+          <Provider store={store}>
+            <Pagination isLastPage={false} />
+          </Provider>
+        ),
       },
-      onPerPageChange: noopFunc,
-      isLastPage: false,
-    };
+    ];
+    const testRouter = createMemoryRouter(testRoutes, {
+      initialEntries: ['/?page=5'],
+    });
 
-    render(<Pagination {...testPaginationProps} />);
+    render(<RouterProvider router={testRouter} />);
 
     const buttons: Array<HTMLButtonElement> = screen.getAllByRole('button');
 
-    fireEvent.click(buttons[buttons.length - 1]);
-    expect(mockQueryParam).toBe('?page=6');
+    fireEvent.click(buttons[buttons.length - 1]); // Forward Button
+    const urlParamsForward = new URLSearchParams(
+      testRouter.state.location.search
+    );
+    expect(urlParamsForward.get('page')).toBe('6');
 
-    fireEvent.click(buttons[buttons.length - 2]);
-    expect(mockQueryParam).toBe('?page=4');
+    fireEvent.click(buttons[buttons.length - 2]); // Back Button
+    const urlParamsBack = new URLSearchParams(testRouter.state.location.search);
+    expect(urlParamsBack.get('page')).toBe('5');
   });
 });
