@@ -26,8 +26,8 @@ const Pagination = (props: PaginationProps) => {
   };
 
   // the store is the source of truth for the number of items per page
-  const perPage: number = useSelector(
-    (state: StoreState) => state.perPage.perPage
+  const perPage: string = useSelector(
+    (state: StoreState) => state.perPage.perPage as string
   );
   const dispatch: AppDispatch = useDispatch();
 
@@ -48,7 +48,7 @@ const Pagination = (props: PaginationProps) => {
     >
       <div style={{ display: 'flex', gap: '10px' }}>
         <label>Per page:</label>
-        <select defaultValue={String(perPage)} onChange={handlePerPageChange}>
+        <select defaultValue={perPage} onChange={handlePerPageChange}>
           <option value="5">5</option>
           <option value="10">10</option>
           <option value="25">25</option>
