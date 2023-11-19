@@ -16,7 +16,7 @@ describe('Tests for Search', () => {
     );
 
     const input: HTMLInputElement = screen.getByRole('textbox');
-    input.value = testSearchValue;
+    fireEvent.change(input, { target: { value: testSearchValue } });
 
     fireEvent.click(screen.getByRole('button'));
 
