@@ -4,6 +4,7 @@ import Card from '../components/Card';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { appRoutes } from '../AppRouter';
 import { testItem } from '../setupTests';
+import * as apiExports from '../api/BeerAPI';
 
 describe('Tests for Item Card', () => {
   it('Renders relevant card data', () => {
@@ -41,7 +42,7 @@ describe('Tests for Item Card', () => {
       initialEntries: ['/?page=1'],
     });
 
-    const spyOnAPICall = vi.spyOn(global, 'fetch');
+    const spyOnAPICall = vi.spyOn(apiExports, 'useFetchDataQuery');
 
     render(<RouterProvider router={testRouter} />);
 
