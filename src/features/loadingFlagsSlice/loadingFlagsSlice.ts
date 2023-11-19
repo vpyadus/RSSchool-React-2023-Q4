@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction, Slice } from '@reduxjs/toolkit';
+import { beerAPI } from '../../api/BeerAPI';
 
 export interface LoadingFlagSliceState {
   isLoadingMainPage: boolean;
@@ -26,6 +27,32 @@ export const loadingFlagsSlice: Slice<LoadingFlagSliceState> = createSlice({
     ) => {
       state.isLoadingDetailsPage = actions.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      beerAPI.endpoints.fetchData.matchPending,
+      (state: LoadingFlagSliceState) => {
+        state.isLoadingMainPage = true;
+      }
+    );
+    builder.addMatcher(
+      beerAPI.endpoints.fetchData.matchFulfilled,
+      (state: LoadingFlagSliceState) => {
+        state.isLoadingMainPage = false;
+      }
+    );
+    builder.addMatcher(
+      beerAPI.endpoints.fetchItem.matchPending,
+      (state: LoadingFlagSliceState) => {
+        state.isLoadingDetailsPage = true;
+      }
+    );
+    builder.addMatcher(
+      beerAPI.endpoints.fetchItem.matchFulfilled,
+      (state: LoadingFlagSliceState) => {
+        state.isLoadingDetailsPage = false;
+      }
+    );
   },
 });
 

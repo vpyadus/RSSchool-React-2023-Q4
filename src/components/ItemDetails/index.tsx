@@ -3,10 +3,8 @@ import { BeerDetails, useFetchItemQuery } from '../../api/BeerAPI';
 import Spinner from '../Spinner';
 import './styles.css';
 import { OutletContextParams } from '../../App';
-import { useEffect, useRef } from 'react';
-import { AppDispatch, StoreState } from '../../store/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { setIsLoadingDetailsPageFlag } from '../../features/loadingFlagsSlice/loadingFlagsSlice';
+import { StoreState } from '../../store/store';
+import { useSelector } from 'react-redux';
 
 const ItemDetails = () => {
   const { itemId, hideItemDetails } = useOutletContext<OutletContextParams>();
@@ -15,16 +13,8 @@ const ItemDetails = () => {
     (state: StoreState) => state.loadingFlags.isLoadingDetailsPage
   );
 
-  const { data = [] as BeerDetails[], isLoading } = useFetchItemQuery(itemId);
+  const { data = [] as BeerDetails[] } = useFetchItemQuery(itemId);
   const item: BeerDetails = data[0] ?? {};
-
-  const dispatchRef = useRef<AppDispatch>();
-  dispatchRef.current = useDispatch();
-
-  useEffect(() => {
-    dispatchRef.current &&
-      dispatchRef.current(setIsLoadingDetailsPageFlag(isLoading));
-  }, [isLoading]);
 
   return (
     <>

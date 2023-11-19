@@ -2,10 +2,8 @@ import { BeerDetails, useFetchDataQuery } from '../../api/BeerAPI';
 import Pagination from '../Pagination';
 import ItemList from '../ItemList';
 import Spinner from '../Spinner';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, StoreState } from '../../store/store';
-import { setIsLoadingMainPageFlag } from '../../features/loadingFlagsSlice/loadingFlagsSlice';
-import { useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import { StoreState } from '../../store/store';
 import { useSearchParams } from 'react-router-dom';
 
 export interface MainPageProps {
@@ -30,19 +28,11 @@ const MainPage = (props: MainPageProps) => {
     (state: StoreState) => state.loadingFlags.isLoadingMainPage
   );
 
-  const { data: items = [] as BeerDetails[], isFetching } = useFetchDataQuery({
+  const { data: items = [] as BeerDetails[] } = useFetchDataQuery({
     page,
     per_page: perPage,
     beer_name: searchQuery,
   });
-
-  const dispatchRef = useRef<AppDispatch>();
-  dispatchRef.current = useDispatch();
-
-  useEffect(() => {
-    dispatchRef.current &&
-      dispatchRef.current(setIsLoadingMainPageFlag(isFetching));
-  }, [isFetching]);
 
   return (
     <>
