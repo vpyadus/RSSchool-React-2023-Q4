@@ -1,27 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { BeerDetails } from '../api/BeerAPI';
 import Card from '../components/Card';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { appRoutes } from '../AppRouter';
-import { items } from './mocks';
-
-const noopFunc: (param?: unknown) => void = () => {};
-
-const item: BeerDetails = items[0];
+import { testItem } from '../setupTests';
 
 describe('Tests for Item Card', () => {
   it('Renders relevant card data', () => {
-    render(<Card {...item} onClick={noopFunc} />);
+    render(<Card {...testItem} onClick={() => {}} />);
 
-    expect(screen.getByText(item.name)).toBeInTheDocument();
-    expect(screen.getByText(item.description)).toBeInTheDocument();
+    expect(screen.getByText(testItem.name)).toBeInTheDocument();
+    expect(screen.getByText(testItem.description)).toBeInTheDocument();
 
     const img: HTMLImageElement = screen.getByRole('img', {
-      name: item.name,
+      name: testItem.name,
     }) as HTMLImageElement;
 
-    expect(img.src).toContain(item.image_url);
+    expect(img.src).toContain(testItem.image_url);
   });
 
   it('Click on the card opens its details', async () => {
@@ -38,7 +33,7 @@ describe('Tests for Item Card', () => {
 
     const detailsName = await screen.findByRole('heading', { level: 2 });
     expect(detailsName).toBeInTheDocument();
-    expect(detailsName).toHaveTextContent(item.name);
+    expect(detailsName).toHaveTextContent(testItem.name);
   });
 
   it('Click on the card initiates an API call', async () => {

@@ -10,14 +10,14 @@ import { store } from './store/store';
 
 expect.extend(matchers);
 
-const item: BeerDetails = items[0];
+export const testItem: BeerDetails = items[0];
 
 const server: SetupServer = setupServer(
   rest.get('https://api.punkapi.com/v2/beers/', (req, res, ctx) => {
-    return res(ctx.json([item]));
+    return res(ctx.json([testItem]));
   }),
   rest.get('https://api.punkapi.com/v2/beers/2', (req, res, ctx) => {
-    return res(ctx.json([item]));
+    return res(ctx.json([testItem]));
   })
 );
 

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { useState } from 'react';
-import { BeerDetails } from '../api/BeerAPI';
 import {
   Outlet,
   RouteObject,
@@ -10,17 +9,15 @@ import {
 } from 'react-router-dom';
 import ItemDetails from '../components/ItemDetails';
 import { OutletContextParams } from '../App';
-import { items } from './mocks';
 import { Provider } from 'react-redux';
 import { store } from '../store/store';
-
-const item: BeerDetails = items[0];
+import { testItem } from '../setupTests';
 
 describe('Tests for Item Details', () => {
   const TestApp = () => {
     const [shouldShowOutlet, setShouldShowOutlet] = useState<boolean>(true);
     const testOutletContext: OutletContextParams = {
-      itemId: String(item.id),
+      itemId: String(testItem.id),
       hideItemDetails: () => setShouldShowOutlet(false),
     };
     return <>{shouldShowOutlet && <Outlet context={testOutletContext} />}</>;
@@ -67,17 +64,17 @@ describe('Tests for Item Details', () => {
       level: 2,
     });
 
-    expect(detailsName).toHaveTextContent(item.name);
-    expect(screen.getByText(item.tagline)).toBeInTheDocument();
+    expect(detailsName).toHaveTextContent(testItem.name);
+    expect(screen.getByText(testItem.tagline)).toBeInTheDocument();
 
     const img: HTMLImageElement = document.querySelector(
       'img'
     ) as HTMLImageElement;
 
-    expect(img.src).toContain(item.image_url);
+    expect(img.src).toContain(testItem.image_url);
 
-    expect(screen.getByText(item.description)).toBeInTheDocument();
-    expect(screen.getByText(item.first_brewed)).toBeInTheDocument();
+    expect(screen.getByText(testItem.description)).toBeInTheDocument();
+    expect(screen.getByText(testItem.first_brewed)).toBeInTheDocument();
   });
 
   it('Click on the Close button closes the component', async () => {
