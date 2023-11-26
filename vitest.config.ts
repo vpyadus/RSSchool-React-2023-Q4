@@ -6,7 +6,13 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.ts'],
     coverage: {
-      exclude: ['src/vite-env.d.ts', 'src/__tests__', '*.cjs', '*.mjs'],
+      exclude: [
+        'src/vite-env.d.ts',
+        'src/__tests__',
+        '*.cjs',
+        '*.mjs',
+        'next-env.d.ts',
+      ],
     },
   },
 });
