@@ -1,29 +1,20 @@
 import { useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, StoreState } from '../../store/store';
-import { setSearchQuery } from '../../features/searchSlice/searchSlice';
-import LocalStorageAPI from '../../api/LocalStorageAPI';
 
 export type SearchHandlerFunc = (searchQuery: string) => void;
 
 export interface SearchProps {
+  searchQuery: string;
   afterSearchHandler: SearchHandlerFunc;
 }
 
 const Search = (props: SearchProps) => {
-  const { afterSearchHandler } = props;
-  const searchQuery: string = useSelector(
-    (state: StoreState) => state.search.searchQuery
-  );
-  const dispatch: AppDispatch = useDispatch();
+  const { searchQuery, afterSearchHandler } = props;
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const searchOnClick = (): void => {
     const search: string = inputRef.current?.value.trim() ?? '';
-    dispatch(setSearchQuery(search));
     afterSearchHandler(search);
-    LocalStorageAPI.saveSearchString(search);
   };
 
   return (
