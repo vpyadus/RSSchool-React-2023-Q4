@@ -1,64 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { useState } from 'react';
-import {
-  Outlet,
-  RouteObject,
-  createMemoryRouter,
-  RouterProvider,
-} from 'react-router-dom';
-import ItemDetails from '../components/ItemDetails';
-import { OutletContextParams } from '../App';
-import { Provider } from 'react-redux';
-import { store } from '../store/store';
 import { testItem } from '../setupTests';
+import ItemDetails, { ItemDetailsProps } from '../components/ItemDetails';
 
 describe('Tests for Item Details', () => {
-  const TestApp = () => {
-    const [shouldShowOutlet, setShouldShowOutlet] = useState<boolean>(true);
-    const testOutletContext: OutletContextParams = {
-      itemId: String(testItem.id),
-      hideItemDetails: () => setShouldShowOutlet(false),
-    };
-    return <>{shouldShowOutlet && <Outlet context={testOutletContext} />}</>;
-  };
-
-  const testRoutes: Array<RouteObject> = [
-    {
-      path: '/',
-      element: (
-        <Provider store={store}>
-          <TestApp />
-        </Provider>
-      ),
-      children: [
-        {
-          index: true,
-          element: <ItemDetails />,
-        },
-      ],
-    },
-  ];
-  const testRouter = createMemoryRouter(testRoutes, {
-    initialEntries: [`/`],
-  });
-
-  it('Spinner is displayed while fetching data', async () => {
-    render(<RouterProvider router={testRouter} />);
-
-    const loaderDiv: HTMLElement = document.querySelector(
-      '.loader'
-    ) as HTMLElement;
-
-    expect(loaderDiv).toBeInTheDocument();
-
-    await screen.findByRole('heading', { level: 2 });
-
-    expect(loaderDiv).not.toBeInTheDocument();
-  });
-
   it('Detailed card correctly displays detailed data', async () => {
-    render(<RouterProvider router={testRouter} />);
+    render(<ItemDetails item={testItem} hideItemDetails={() => {}} />);
 
     const detailsName: HTMLElement = await screen.findByRole('heading', {
       level: 2,
@@ -78,12 +25,17 @@ describe('Tests for Item Details', () => {
   });
 
   it('Click on the Close button closes the component', async () => {
-    render(<RouterProvider router={testRouter} />);
+    const testProps: ItemDetailsProps = {
+      item: testItem,
+      hideItemDetails: () => {},
+    };
+    const hideSpy = vi.spyOn(testProps, 'hideItemDetails');
+    render(<ItemDetails {...testProps} />);
 
     const button: HTMLButtonElement = await screen.findByRole('button');
 
     fireEvent.click(button);
 
-    expect(button).not.toBeInTheDocument();
+    expect(hideSpy).toBeCalled();
   });
 });

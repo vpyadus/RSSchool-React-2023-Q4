@@ -1,16 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { RouterProvider, createMemoryRouter } from 'react-router-dom';
-import { appRoutes } from '../AppRouter';
+import NotFound from '../components/NotFound';
 
 describe('Test Routing', () => {
   it('Renders 404 Page if route is invalid', () => {
-    const invalidPath: string = '/this/route/does/not/exist';
-    const testRouter = createMemoryRouter(appRoutes, {
-      initialEntries: [invalidPath],
-    });
-    render(<RouterProvider router={testRouter} />);
-
+    render(<NotFound />);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       '404 - Not Found'
     );

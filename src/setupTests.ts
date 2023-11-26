@@ -1,14 +1,16 @@
 import '@testing-library/jest-dom/vitest';
 import * as matchers from '@testing-library/jest-dom/matchers';
+import React from 'react';
 import { expect } from 'vitest';
 import { rest } from 'msw';
 import { SetupServer, setupServer } from 'msw/node';
 import 'whatwg-fetch';
-import { BeerDetails, beerAPI } from './api/BeerAPI';
+import { BeerDetails } from './api/BeerAPI';
 import { items } from './__tests__/mocks';
-import { store } from './store/store';
 
 expect.extend(matchers);
+
+global.React = React;
 
 export const testItem: BeerDetails = items[0];
 
@@ -24,6 +26,5 @@ const server: SetupServer = setupServer(
 beforeAll(() => server.listen());
 afterEach(() => {
   server.resetHandlers();
-  store.dispatch(beerAPI.util.resetApiState());
 });
 afterAll(() => server.close());

@@ -1,10 +1,35 @@
 import { describe, expect, it } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import Card from '../components/Card';
-import { RouterProvider, createMemoryRouter } from 'react-router-dom';
-import { appRoutes } from '../AppRouter';
 import { testItem } from '../setupTests';
-import * as apiExports from '../api/BeerAPI';
+import MainPage, {
+  getServerSideProps as getServerSidePropsMainPage,
+} from '../../pages/index';
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import { createRequest, createResponse } from 'node-mocks-http';
+import mockRouter from 'next-router-mock';
+import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
+
+export const gsspCtx = (
+  ctx?: Partial<GetServerSidePropsContext>
+): GetServerSidePropsContext => ({
+  req: createRequest(),
+  res: createResponse(),
+  params: undefined,
+  query: {},
+  resolvedUrl: '',
+  ...ctx,
+});
+
+export function assertHasProps<T>(
+  res: GetServerSidePropsResult<T>
+): asserts res is { props: T } {
+  const hasProps =
+    typeof res === 'object' &&
+    (res as { props: unknown })['props'] &&
+    typeof (res as { props: unknown }).props === 'object';
+  if (!hasProps) throw new Error('no props');
+}
 
 describe('Tests for Item Card', () => {
   it('Renders relevant card data', () => {
@@ -21,36 +46,14 @@ describe('Tests for Item Card', () => {
   });
 
   it('Click on the card opens its details', async () => {
-    const testRouter = createMemoryRouter(appRoutes, {
-      initialEntries: ['/?page=1'],
-    });
-
-    render(<RouterProvider router={testRouter} />);
-
+    mockRouter.push('/');
+    const res = await getServerSidePropsMainPage(gsspCtx());
+    assertHasProps(res);
+    render(<MainPage {...res.props} />, { wrapper: MemoryRouterProvider });
     const card: HTMLElement = await screen.findByRole('article');
     expect(card).toBeInTheDocument();
 
     fireEvent.click(card);
-
-    const detailsName = await screen.findByRole('heading', { level: 2 });
-    expect(detailsName).toBeInTheDocument();
-    expect(detailsName).toHaveTextContent(testItem.name);
-  });
-
-  it('Click on the card initiates an API call', async () => {
-    const testRouter = createMemoryRouter(appRoutes, {
-      initialEntries: ['/?page=1'],
-    });
-
-    const spyOnAPICall = vi.spyOn(apiExports, 'useFetchDataQuery');
-
-    render(<RouterProvider router={testRouter} />);
-
-    const card: HTMLElement = await screen.findByRole('article');
-    expect(card).toBeInTheDocument();
-
-    fireEvent.click(card);
-
-    expect(spyOnAPICall).toBeCalled();
+    expect(mockRouter.pathname).toBe(`/details/${testItem.id}`);
   });
 });
