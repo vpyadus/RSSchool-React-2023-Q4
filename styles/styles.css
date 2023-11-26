@@ -1,3 +1,18 @@
+.itemcard {
+  display: flex;
+  max-width: 300px;
+  border: 1px black solid;
+  margin: 5px;
+  padding: 5px;
+  cursor: pointer;
+  background-color: white;
+  border-radius: 5px;
+}
+
+.itemcard:hover {
+  box-shadow: 0px 0px 10px lightgrey;
+}
+
 .loader {
   border: 16px solid #f3f3f3; /* Light grey */
   border-top: 16px solid #3498db; /* Blue */

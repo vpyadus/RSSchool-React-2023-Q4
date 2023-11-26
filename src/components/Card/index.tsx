@@ -1,5 +1,4 @@
 import { BeerDetails } from '../../api/BeerAPI';
-import './styles.css';
 
 export interface ItemProps extends BeerDetails {
   onClick: () => void;
