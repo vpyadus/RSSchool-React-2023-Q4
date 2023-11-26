@@ -66,7 +66,9 @@ export default function Item({
 }) {
   const router: NextRouter = useRouter();
   const hideItemDetails = (): void => {
-    router.back();
+    const url = new URL(`https://google.com/${router.asPath}`);
+    const searchParams = new URLSearchParams(url.search);
+    router.push(`/?${searchParams.toString()}`);
   };
   return (
     <>

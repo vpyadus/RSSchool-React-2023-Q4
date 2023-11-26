@@ -13,7 +13,7 @@ const ItemDetails = (props: ItemDetailsProps) => {
       <div className="overlay" onClick={hideItemDetails} />
       <div className="container">
         <div className="modal">
-          <button className="closeBtn" onClick={hideItemDetails}>
+          <button className="closeBtn" name="Close" onClick={hideItemDetails}>
             Close
           </button>
           <h2 className="heading">{item.name}</h2>
