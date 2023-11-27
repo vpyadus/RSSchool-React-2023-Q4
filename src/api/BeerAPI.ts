@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { HYDRATE } from 'next-redux-wrapper';
 
 export const apiURL = 'https://api.punkapi.com/v2/beers/';
 
@@ -20,6 +21,11 @@ export interface BeerDetails {
 export const beerAPI = createApi({
   reducerPath: 'beerApi',
   baseQuery: fetchBaseQuery({ baseUrl: apiURL }),
+  extractRehydrationInfo(action, { reducerPath }) {
+    if (action.type === HYDRATE) {
+      return action.payload[reducerPath];
+    }
+  },
   endpoints: (builder) => ({
     fetchData: builder.query<BeerDetails[], SearchParams>({
       query: (params: SearchParams) => {
@@ -36,4 +42,12 @@ export const beerAPI = createApi({
   }),
 });
 
-export const { useFetchDataQuery, useFetchItemQuery } = beerAPI;
+// Export hooks for usage in functional components
+export const {
+  useFetchDataQuery,
+  useFetchItemQuery,
+  util: { getRunningQueriesThunk },
+} = beerAPI;
+
+// export endpoints for use in SSR
+export const { fetchData, fetchItem } = beerAPI.endpoints;

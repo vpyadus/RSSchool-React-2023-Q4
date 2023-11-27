@@ -11,7 +11,7 @@ const ItemList = (props: ItemListProps) => {
   return (
     <>
       {items.length ? (
-        <div style={{ display: 'flex', flexFlow: 'row wrap' }}>
+        <div style={{ display: 'flex', flexFlow: 'row wrap', padding: '10px' }}>
           {items.map((card) => (
             <Card
               key={card.id}

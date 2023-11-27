@@ -1,9 +1,6 @@
 import { ChangeEvent } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, StoreState } from '../../store/store';
-import { setItemsPerPage } from '../../features/itemsPerPageSlice/itemsPerPageSlice';
-import { useSearchParams } from 'react-router-dom';
-import upsertSearchParam from '../../utils/upsertSearchParam';
+import { NextRouter, useRouter } from 'next/router';
+import getUpsertedSearchParams from '../../utils/getUpsertedSearchParams';
 
 export interface PaginationProps {
   isLastPage: boolean;
@@ -12,30 +9,27 @@ export interface PaginationProps {
 const Pagination = (props: PaginationProps) => {
   const { isLastPage } = props;
 
-  // the URL query is the source of truth for a page number
-  const [searchParams, setSearchParams] = useSearchParams();
-  const page: number = Number(searchParams.get('page')) ?? 1;
+  const router: NextRouter = useRouter();
+  const page: string =
+    typeof router.query.page === 'string' ? router.query.page : '1';
+  const perPage: string =
+    typeof router.query.per_page === 'string' ? router.query.per_page : '10';
 
   const pageChangeHandler = (newPage: number): void => {
-    const updatedParams: URLSearchParams = upsertSearchParam(
-      searchParams,
-      'page',
-      String(newPage)
-    );
-    setSearchParams(updatedParams);
+    const params: string = getUpsertedSearchParams(router.asPath, [
+      { page: String(newPage) },
+    ]);
+    router.push(`/?${params}`);
   };
-
-  // the store is the source of truth for the number of items per page
-  const perPage: string = useSelector(
-    (state: StoreState) => state.perPage.perPage as string
-  );
-  const dispatch: AppDispatch = useDispatch();
 
   const handlePerPageChange: (e: ChangeEvent<HTMLSelectElement>) => void = (
     e
   ) => {
-    dispatch(setItemsPerPage(e.target.value));
-    pageChangeHandler(1);
+    const params: string = getUpsertedSearchParams(router.asPath, [
+      { per_page: e.target.value },
+      { page: '1' },
+    ]);
+    router.push(`/?${params}`);
   };
 
   return (
@@ -64,14 +58,14 @@ const Pagination = (props: PaginationProps) => {
         }}
       >
         <button
-          disabled={page === 1}
-          onClick={() => pageChangeHandler(page - 1)}
+          disabled={page === '1'}
+          onClick={() => pageChangeHandler(Number(page) - 1)}
         >
           Prev Page
         </button>
         <button
           disabled={isLastPage}
-          onClick={() => pageChangeHandler(page + 1)}
+          onClick={() => pageChangeHandler(Number(page) + 1)}
         >
           Next Page
         </button>

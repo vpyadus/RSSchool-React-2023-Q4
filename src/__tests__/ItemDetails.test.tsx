@@ -1,64 +1,37 @@
 import { describe, expect, it } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { useState } from 'react';
-import {
-  Outlet,
-  RouteObject,
-  createMemoryRouter,
-  RouterProvider,
-} from 'react-router-dom';
-import ItemDetails from '../components/ItemDetails';
-import { OutletContextParams } from '../App';
-import { Provider } from 'react-redux';
-import { store } from '../store/store';
 import { testItem } from '../setupTests';
+import ItemDetails from '../components/ItemDetails';
+import mockRouter from 'next-router-mock';
+import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
+import Item, { getServerSideProps } from '../../pages/details/[item]';
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import { createRequest, createResponse } from 'node-mocks-http';
+
+export const gsspCtx = (
+  ctx?: Partial<GetServerSidePropsContext>
+): GetServerSidePropsContext => ({
+  req: createRequest(),
+  res: createResponse(),
+  params: undefined,
+  query: {},
+  resolvedUrl: '',
+  ...ctx,
+});
+
+export function assertHasProps<T>(
+  res: GetServerSidePropsResult<T>
+): asserts res is { props: T } {
+  const hasProps =
+    typeof res === 'object' &&
+    (res as { props: unknown })['props'] &&
+    typeof (res as { props: unknown }).props === 'object';
+  if (!hasProps) throw new Error('no props');
+}
 
 describe('Tests for Item Details', () => {
-  const TestApp = () => {
-    const [shouldShowOutlet, setShouldShowOutlet] = useState<boolean>(true);
-    const testOutletContext: OutletContextParams = {
-      itemId: String(testItem.id),
-      hideItemDetails: () => setShouldShowOutlet(false),
-    };
-    return <>{shouldShowOutlet && <Outlet context={testOutletContext} />}</>;
-  };
-
-  const testRoutes: Array<RouteObject> = [
-    {
-      path: '/',
-      element: (
-        <Provider store={store}>
-          <TestApp />
-        </Provider>
-      ),
-      children: [
-        {
-          index: true,
-          element: <ItemDetails />,
-        },
-      ],
-    },
-  ];
-  const testRouter = createMemoryRouter(testRoutes, {
-    initialEntries: [`/`],
-  });
-
-  it('Spinner is displayed while fetching data', async () => {
-    render(<RouterProvider router={testRouter} />);
-
-    const loaderDiv: HTMLElement = document.querySelector(
-      '.loader'
-    ) as HTMLElement;
-
-    expect(loaderDiv).toBeInTheDocument();
-
-    await screen.findByRole('heading', { level: 2 });
-
-    expect(loaderDiv).not.toBeInTheDocument();
-  });
-
   it('Detailed card correctly displays detailed data', async () => {
-    render(<RouterProvider router={testRouter} />);
+    render(<ItemDetails item={testItem} hideItemDetails={() => {}} />);
 
     const detailsName: HTMLElement = await screen.findByRole('heading', {
       level: 2,
@@ -78,12 +51,17 @@ describe('Tests for Item Details', () => {
   });
 
   it('Click on the Close button closes the component', async () => {
-    render(<RouterProvider router={testRouter} />);
+    mockRouter.push(`/`);
+    mockRouter.push(`/details/${testItem.id}`);
+    const res = await getServerSideProps(gsspCtx());
+    assertHasProps(res);
+    render(<Item {...res.props} />, { wrapper: MemoryRouterProvider });
 
-    const button: HTMLButtonElement = await screen.findByRole('button');
+    const button: HTMLButtonElement = await screen.findByRole('button', {
+      name: 'Close',
+    });
 
     fireEvent.click(button);
-
-    expect(button).not.toBeInTheDocument();
+    expect(mockRouter.pathname).toBe('/');
   });
 });
