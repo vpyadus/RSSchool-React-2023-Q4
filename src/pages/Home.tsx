@@ -1,7 +1,11 @@
-import App from '../App';
+import Header from '../components/Header';
 
-const Home = () => {
-  return <App />;
+const Home = (): JSX.Element => {
+  return (
+    <>
+      <Header isHomePage={true} />
+    </>
+  );
 };
 
 export default Home;
