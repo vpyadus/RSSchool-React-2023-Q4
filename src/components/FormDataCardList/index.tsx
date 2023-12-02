@@ -14,7 +14,11 @@ const FormDataCardList = (): JSX.Element => {
         .slice()
         .reverse()
         .map((formData: FormData, index: number) => (
-          <FormDataCard {...formData} key={index} />
+          <FormDataCard
+            data={formData}
+            isNewlyAdded={index === 0}
+            key={index}
+          />
         ))}
     </div>
   );

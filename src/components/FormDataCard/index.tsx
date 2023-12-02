@@ -1,7 +1,14 @@
+import { useEffect, useState } from 'react';
 import { FormData } from '../../features/formDataSlice/formDataSlice';
 import './style.css';
 
-const FormDataCard = (props: FormData): JSX.Element => {
+export type FormDataCardProps = {
+  data: FormData;
+  isNewlyAdded: boolean;
+};
+
+const FormDataCard = (props: FormDataCardProps): JSX.Element => {
+  const { isNewlyAdded } = props;
   const {
     formType,
     name,
@@ -12,18 +19,47 @@ const FormDataCard = (props: FormData): JSX.Element => {
     tcAccepted,
     picture,
     country,
-  } = props;
+  } = props.data;
+
+  const [isHighlighted, setIsHignlighted] = useState<boolean>(isNewlyAdded);
+
+  useEffect(() => {
+    if (isNewlyAdded) {
+      setTimeout(() => {
+        setIsHignlighted(false);
+      }, 3000);
+    }
+  }, [isNewlyAdded]);
+
   return (
-    <div className="formdata__card">
-      <div>Form Type: {formType}</div>
-      <div>Name: {name}</div>
-      <div>Age: {age}</div>
-      <div>Email: {email}</div>
-      <div>Password: {password}</div>
-      <div>Gender: {gender}</div>
-      <div>Accepted T&C: {tcAccepted ? 'true' : 'false'}</div>
-      <div>Pictire: {picture}</div>
-      <div>Country: {country}</div>
+    <div className={`formdata__card ${isHighlighted ? 'highlighted' : ''}`}>
+      <div>
+        <b>Form Type:</b> {formType}
+      </div>
+      <div>
+        <b>Name:</b> {name}
+      </div>
+      <div>
+        <b>Age:</b> {age}
+      </div>
+      <div>
+        <b>Email:</b> {email}
+      </div>
+      <div>
+        <b>Password:</b> {password}
+      </div>
+      <div>
+        <b>Gender:</b> {gender}
+      </div>
+      <div>
+        <b>Accepted T&C:</b> {tcAccepted ? 'true' : 'false'}
+      </div>
+      <div>
+        <b>Pictire:</b> {picture}
+      </div>
+      <div>
+        <b>Country:</b> {country}
+      </div>
     </div>
   );
 };
