@@ -17,7 +17,7 @@ export interface FormDataSliceState {
 }
 
 const initialState: FormDataSliceState = {
-  formSubmissions: [],
+  formSubmissions: [] as Array<FormData>,
 };
 
 export const formDataSlice: Slice<FormDataSliceState> = createSlice({
