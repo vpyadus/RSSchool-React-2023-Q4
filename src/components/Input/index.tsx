@@ -1,4 +1,4 @@
-import { ChangeEventHandler, RefObject } from 'react';
+import { ChangeEventHandler, ForwardedRef, forwardRef } from 'react';
 import { Genders } from '../../features/formDataSlice/formDataSlice';
 import './style.css';
 
@@ -18,71 +18,68 @@ export type InputProps = {
   label: string;
   value?: string | number | Genders;
   checked?: boolean;
-  inputRef?: RefObject<HTMLInputElement>;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   datalist?: Array<string>;
   error?: string;
 };
 
-const Input = (props: InputProps): JSX.Element => {
-  const {
-    id,
-    name,
-    type,
-    label,
-    value = '',
-    checked = false,
-    inputRef = null,
-    onChange,
-    datalist = [],
-    error = '',
-  } = props;
+const Input = forwardRef(
+  (
+    props: InputProps,
+    inputRef: ForwardedRef<HTMLInputElement>
+  ): JSX.Element => {
+    const {
+      id,
+      name,
+      type,
+      label,
+      value = '',
+      checked = false,
+      onChange,
+      datalist = [],
+      error = '',
+    } = props;
 
-  const isUncontrolled: boolean = inputRef !== null;
-  const isDatalist: boolean = datalist.length > 0;
-  const datalistId: string = isDatalist ? `datalist-${id}` : '';
-  const isFileUpload: boolean = type === 'file';
+    const isDatalist: boolean = datalist.length > 0;
+    const datalistId: string = isDatalist ? `datalist-${id}` : '';
+    const isFileUpload: boolean = type === 'file';
 
-  return (
-    <>
-      <div>
-        <label htmlFor={id}>{label}</label>
-        {isUncontrolled && (
-          <input
-            defaultValue={value}
-            type={type}
-            id={id}
-            name={name}
-            ref={inputRef}
-            defaultChecked={checked}
-            list={datalistId}
-          />
-        )}
-        {!isUncontrolled &&
-          (isFileUpload ? (
-            <input type={type} id={id} name={name} onChange={onChange} />
-          ) : (
+    return (
+      <>
+        <div>
+          <label htmlFor={id}>{label}</label>
+          {isFileUpload ? (
             <input
-              value={value}
               type={type}
               id={id}
               name={name}
-              checked={checked}
+              onChange={onChange}
+              ref={inputRef}
+            />
+          ) : (
+            <input
+              defaultValue={value}
+              type={type}
+              id={id}
+              name={name}
+              ref={inputRef}
+              defaultChecked={checked}
               onChange={onChange}
               list={datalistId}
             />
-          ))}
-        <div className="error-message">&nbsp;{error}</div>
-      </div>
-      {isDatalist && (
-        <datalist id={datalistId}>
-          {datalist.map((country: string, index: number) => (
-            <option value={country} key={index} />
-          ))}
-        </datalist>
-      )}
-    </>
-  );
-};
+          )}
+          <div className="error-message">&nbsp;{error}</div>
+        </div>
+        {isDatalist && (
+          <datalist id={datalistId}>
+            {datalist.map((country: string, index: number) => (
+              <option value={country} key={index} />
+            ))}
+          </datalist>
+        )}
+      </>
+    );
+  }
+);
 
 export default Input;

@@ -2,7 +2,7 @@ import './App.css';
 import { Provider } from 'react-redux';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import UncontrolledForm from './pages/UncontrolledForm.tsx';
-import ControlledForm from './pages/ControlledForm.tsx';
+import ReackHookBasedForm from './pages/ReackHookBasedForm.tsx';
 import Home from './pages/Home.tsx';
 import NotFound from './pages/404.tsx';
 import { store } from './store/store.ts';
@@ -17,8 +17,8 @@ const router = createBrowserRouter([
     element: <UncontrolledForm />,
   },
   {
-    path: '/controlled-form',
-    element: <ControlledForm />,
+    path: '/react-hook-form',
+    element: <ReackHookBasedForm />,
   },
   {
     path: '*',

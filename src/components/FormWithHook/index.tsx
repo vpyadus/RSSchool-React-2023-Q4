@@ -1,28 +1,30 @@
-import { FormEventHandler, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Input from '../Input';
-import { AppDispatch, StoreState } from '../../store/store';
 import { useDispatch, useSelector } from 'react-redux';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import Input from '../Input';
 import {
   FormData,
   FormTypes,
+  Genders,
   addFormData,
 } from '../../features/formDataSlice/formDataSlice';
+import { useNavigate } from 'react-router-dom';
+import { AppDispatch, StoreState } from '../../store/store';
 import getBase64FileRepresentation from '../../utils/getBase64FileRepresentation';
 
-const FormWithRef = (): JSX.Element => {
-  const formTypeRef = useRef<HTMLInputElement>(null);
-  const nameRef = useRef<HTMLInputElement>(null);
-  const ageRef = useRef<HTMLInputElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
-  const passwordConfirmRef = useRef<HTMLInputElement>(null);
-  const maleGenderRef = useRef<HTMLInputElement>(null);
-  const femaleGenderRef = useRef<HTMLInputElement>(null);
-  const acceptRef = useRef<HTMLInputElement>(null);
-  const imageRef = useRef<HTMLInputElement>(null);
-  const countryRef = useRef<HTMLInputElement>(null);
+export type FormFields = {
+  formType: FormTypes;
+  name: string;
+  age: string;
+  email: string;
+  password: string;
+  passwordConfirm: string;
+  gender: Genders;
+  tcAccepted: boolean;
+  picture: FileList | null;
+  country: string;
+};
 
+const FormWithHook = (): JSX.Element => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
 
@@ -30,60 +32,67 @@ const FormWithRef = (): JSX.Element => {
     (store: StoreState) => store.countries.countries
   );
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = async (
-    e
+  const { register, handleSubmit } = useForm<FormFields>({
+    defaultValues: {
+      formType: 'controlled' as FormTypes,
+      name: '',
+      age: '',
+      email: '',
+      password: '',
+      passwordConfirm: '',
+      gender: 'male' as Genders,
+      tcAccepted: false,
+      picture: null,
+      country: '',
+    },
+  });
+
+  const onSubmit: SubmitHandler<FormFields> = async (
+    data: FormFields
   ): Promise<void> => {
-    e.preventDefault();
     const b64Picture: string =
-      imageRef.current?.files && imageRef.current?.files[0]
-        ? await getBase64FileRepresentation(imageRef.current?.files[0])
+      data.picture && data.picture[0]
+        ? await getBase64FileRepresentation(data.picture[0])
         : '';
     const formData: FormData = {
-      formType: (formTypeRef.current?.value as FormTypes) ?? 'uncontrolled',
-      name: nameRef.current?.value ?? '',
-      age: Number(ageRef.current?.value),
-      email: emailRef.current?.value ?? '',
-      password: passwordRef.current?.value ?? '',
-      gender: maleGenderRef.current?.checked ? 'male' : 'female',
-      tcAccepted: Boolean(acceptRef.current?.checked),
+      formType: data.formType,
+      name: data.name,
+      age: Number(data.age),
+      email: data.email,
+      password: data.password,
+      gender: data.gender,
+      tcAccepted: data.tcAccepted,
       picture: b64Picture,
-      country: countryRef.current?.value ?? '',
+      country: data.country,
     };
+    console.log(formData);
     dispatch(addFormData(formData));
     navigate('/');
   };
 
   return (
     <div className="form__page">
-      <form onSubmit={handleSubmit} noValidate>
-        <input
-          hidden
-          name="form-type"
-          defaultValue={'uncontrolled'}
-          ref={formTypeRef}
-        />
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <input hidden {...register('formType')} />
         <div className="form__content">
           <div className="form__row">
             <Input
               label="Name:"
               type={'text'}
               id="input-name"
-              name="name"
-              ref={nameRef}
+              {...register('name')}
             />
             <Input
               label="Age:"
               type={'number'}
               id="input-age"
-              name="age"
-              ref={ageRef}
+              {...register('age')}
             />
             <Input
               label="Email:"
               type={'email'}
               id="input-email"
-              name="email"
-              ref={emailRef}
+              {...register('email')}
             />
           </div>
           <div className="form__row">
@@ -91,15 +100,13 @@ const FormWithRef = (): JSX.Element => {
               label="Password:"
               type={'password'}
               id="input-password"
-              name="password"
-              ref={passwordRef}
+              {...register('password')}
             />
             <Input
               label="Confirm Password:"
               type={'password'}
               id="input-password-confirm"
-              name="password-confirm"
-              ref={passwordConfirmRef}
+              {...register('passwordConfirm')}
             />
           </div>
           <div className="form__row">
@@ -109,27 +116,22 @@ const FormWithRef = (): JSX.Element => {
                 label="Male"
                 type={'radio'}
                 id="input-gender1"
-                name="gender"
                 value="male"
-                ref={maleGenderRef}
-                checked
+                {...register('gender')}
               />
               <Input
                 label="Female"
                 type={'radio'}
                 id="input-gender2"
-                name="gender"
                 value="female"
-                ref={femaleGenderRef}
+                {...register('gender')}
               />
             </div>
             <Input
               label="Accept T&C"
               type={'checkbox'}
               id="input-accept"
-              name="accept"
-              value="accepted"
-              ref={acceptRef}
+              {...register('tcAccepted')}
             />
           </div>
           <div className="form__row">
@@ -137,16 +139,14 @@ const FormWithRef = (): JSX.Element => {
               label="Upload Picture:"
               type={'file'}
               id="input-picture"
-              name="picture"
-              ref={imageRef}
+              {...register('picture')}
             />
             <Input
               label="Select Country:"
               type={'text'}
               id="input-country-select"
-              name="country"
-              ref={countryRef}
               datalist={countries}
+              {...register('country')}
             />
           </div>
         </div>
@@ -156,4 +156,4 @@ const FormWithRef = (): JSX.Element => {
   );
 };
 
-export default FormWithRef;
+export default FormWithHook;
