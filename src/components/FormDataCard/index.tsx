@@ -55,11 +55,11 @@ const FormDataCard = (props: FormDataCardProps): JSX.Element => {
         <b>Accepted T&C:</b> {tcAccepted ? 'true' : 'false'}
       </div>
       <div>
-        <b>Picture:</b> <br />
-        <img src={picture} />
+        <b>Country:</b> {country}
       </div>
       <div>
-        <b>Country:</b> {country}
+        <b>Picture:</b> <br />
+        <img src={picture} />
       </div>
     </div>
   );
