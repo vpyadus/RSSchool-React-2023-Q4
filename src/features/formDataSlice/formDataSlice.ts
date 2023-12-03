@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction, Slice } from '@reduxjs/toolkit';
 
 export type Genders = 'male' | 'female';
+export type FormTypes = 'uncontrolled' | 'controlled';
 
 export interface FormData {
-  formType: 'uncontrolled' | 'controlled';
+  formType: FormTypes;
   name: string;
   age: number;
   email: string;

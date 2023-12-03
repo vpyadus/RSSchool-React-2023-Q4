@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Input from '../Input';
 import {
   FormData,
+  FormTypes,
   Genders,
   addFormData,
 } from '../../features/formDataSlice/formDataSlice';
@@ -10,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppDispatch, StoreState } from '../../store/store';
 
 const FormWithState = (): JSX.Element => {
+  const [formType] = useState<FormTypes>('controlled');
   const [name, setName] = useState<string>('');
   const [age, setAge] = useState<number>(0);
   const [email, setEmail] = useState<string>('');
@@ -30,7 +32,7 @@ const FormWithState = (): JSX.Element => {
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e): void => {
     e.preventDefault();
     const formData: FormData = {
-      formType: 'controlled',
+      formType,
       name,
       age: Number(age),
       email,
@@ -47,6 +49,7 @@ const FormWithState = (): JSX.Element => {
   return (
     <div className="form__page">
       <form onSubmit={handleSubmit} noValidate>
+        <input hidden name="form-type" defaultValue={formType} />
         <div className="form__content">
           <div className="form__row">
             <Input

@@ -1,14 +1,16 @@
 import { FormEventHandler, useRef } from 'react';
-import Input from '../Input';
 import { useNavigate } from 'react-router-dom';
+import Input from '../Input';
 import { AppDispatch, StoreState } from '../../store/store';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   FormData,
+  FormTypes,
   addFormData,
 } from '../../features/formDataSlice/formDataSlice';
 
 const FormWithRef = (): JSX.Element => {
+  const formTypeRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const ageRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -30,7 +32,7 @@ const FormWithRef = (): JSX.Element => {
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e): void => {
     e.preventDefault();
     const formData: FormData = {
-      formType: 'uncontrolled',
+      formType: (formTypeRef.current?.value as FormTypes) ?? 'uncontrolled',
       name: nameRef.current?.value ?? '',
       age: Number(ageRef.current?.value),
       email: emailRef.current?.value ?? '',
@@ -47,6 +49,12 @@ const FormWithRef = (): JSX.Element => {
   return (
     <div className="form__page">
       <form onSubmit={handleSubmit} noValidate>
+        <input
+          hidden
+          name="form-type"
+          defaultValue={'uncontrolled'}
+          ref={formTypeRef}
+        />
         <div className="form__content">
           <div className="form__row">
             <Input
