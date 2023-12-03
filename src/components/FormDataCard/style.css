@@ -1,12 +1,19 @@
 .formdata__card {
   padding: 15px;
   text-align: left;
-  border: solid 2px lightgrey;
-  border-radius: 8px;
-  box-shadow: 0 0 10px lightgrey;
   min-width: 230px;
 }
 
+.formdata__card:nth-child(odd) {
+  background-color: #eef;
+}
+
+.formdata__card:nth-child(even) {
+  background-color: #fef;
+}
+
 .formdata__card.highlighted {
-  border: dotted 2px red;
+  outline: solid 2px yellow;
+  outline-offset: -6px;
+  background-color: lightgreen;
 }
