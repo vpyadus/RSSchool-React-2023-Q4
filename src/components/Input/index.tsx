@@ -1,4 +1,5 @@
-import { Ref } from 'react';
+import { ChangeEventHandler, Ref } from 'react';
+import { Genders } from '../../features/formDataSlice/formDataSlice';
 
 export type InputType =
   | 'text'
@@ -14,9 +15,10 @@ export type InputProps = {
   name: string;
   type: InputType;
   label: string;
-  inputRef?: Ref<HTMLInputElement>;
-  value?: string | number;
+  value?: string | number | Genders;
   checked?: boolean;
+  inputRef?: Ref<HTMLInputElement>;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
 };
 
 const Input = (props: InputProps): JSX.Element => {
@@ -25,21 +27,36 @@ const Input = (props: InputProps): JSX.Element => {
     name,
     type,
     label,
-    inputRef = null,
     value = '',
     checked = false,
+    inputRef = null,
+    onChange,
   } = props;
+
+  const isUncontrolled: boolean = inputRef !== null;
+
   return (
     <>
       <label htmlFor={id}>{label}</label>
-      <input
-        defaultValue={value}
-        type={type}
-        id={id}
-        name={name}
-        ref={inputRef}
-        defaultChecked={checked}
-      />
+      {isUncontrolled ? (
+        <input
+          defaultValue={value}
+          type={type}
+          id={id}
+          name={name}
+          ref={inputRef}
+          defaultChecked={checked}
+        />
+      ) : (
+        <input
+          value={value}
+          type={type}
+          id={id}
+          name={name}
+          checked={checked}
+          onChange={onChange}
+        />
+      )}
     </>
   );
 };

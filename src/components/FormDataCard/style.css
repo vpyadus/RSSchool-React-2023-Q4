@@ -4,6 +4,7 @@
   border: solid 2px lightgrey;
   border-radius: 8px;
   box-shadow: 0 0 10px lightgrey;
+  min-width: 230px;
 }
 
 .formdata__card.highlighted {
