@@ -10,7 +10,7 @@ const Header = ({ isHomePage }: { isHomePage: boolean }): JSX.Element => {
             <button>Open Uncontrolled Form</button>
           </Link>
           <Link to={'/react-hook-form'}>
-            <button>Open Controlled Form</button>
+            <button>Open React-Hook Based Form</button>
           </Link>
         </>
       )}

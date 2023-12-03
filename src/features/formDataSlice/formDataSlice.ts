@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, Slice } from '@reduxjs/toolkit';
 
 export type Genders = 'male' | 'female';
-export type FormTypes = 'uncontrolled' | 'controlled';
+export type FormTypes = 'uncontrolled' | 'react hook form based';
 
 export interface FormData {
   formType: FormTypes;
