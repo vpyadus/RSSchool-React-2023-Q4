@@ -93,8 +93,26 @@ form {
 .form__row {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 15px;
+  gap: 20px;
+  width: 100%;
+  justify-content: space-around;
+}
+
+.form__row label {
+  font-weight: 500;
+}
+
+.form__row .input-radio {
+  display: flex;
+  gap: 10px;
+}
+
+.form__row .input-radio label {
+  font-weight: 400;
+}
+
+.form__row .input-radio span {
+  font-weight: 500;
 }
 
 @media (prefers-color-scheme: light) {

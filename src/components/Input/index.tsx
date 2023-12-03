@@ -1,5 +1,6 @@
 import { ChangeEventHandler, RefObject } from 'react';
 import { Genders } from '../../features/formDataSlice/formDataSlice';
+import './style.css';
 
 export type InputType =
   | 'text'
@@ -20,6 +21,7 @@ export type InputProps = {
   inputRef?: RefObject<HTMLInputElement>;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   datalist?: Array<string>;
+  error?: string;
 };
 
 const Input = (props: InputProps): JSX.Element => {
@@ -33,6 +35,7 @@ const Input = (props: InputProps): JSX.Element => {
     inputRef = null,
     onChange,
     datalist = [],
+    error = '',
   } = props;
 
   const isUncontrolled: boolean = inputRef !== null;
@@ -41,28 +44,31 @@ const Input = (props: InputProps): JSX.Element => {
 
   return (
     <>
-      <label htmlFor={id}>{label}</label>
-      {isUncontrolled ? (
-        <input
-          defaultValue={value}
-          type={type}
-          id={id}
-          name={name}
-          ref={inputRef}
-          defaultChecked={checked}
-          list={datalistId}
-        />
-      ) : (
-        <input
-          value={value}
-          type={type}
-          id={id}
-          name={name}
-          checked={checked}
-          onChange={onChange}
-          list={datalistId}
-        />
-      )}
+      <div>
+        <label htmlFor={id}>{label}</label>
+        {isUncontrolled ? (
+          <input
+            defaultValue={value}
+            type={type}
+            id={id}
+            name={name}
+            ref={inputRef}
+            defaultChecked={checked}
+            list={datalistId}
+          />
+        ) : (
+          <input
+            value={value}
+            type={type}
+            id={id}
+            name={name}
+            checked={checked}
+            onChange={onChange}
+            list={datalistId}
+          />
+        )}
+        <div className="error-message">&nbsp;{error}</div>
+      </div>
       {isDatalist && (
         <datalist id={datalistId}>
           {datalist.map((country: string, index: number) => (

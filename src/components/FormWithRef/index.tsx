@@ -96,8 +96,8 @@ const FormWithRef = (): JSX.Element => {
             />
           </div>
           <div className="form__row">
-            <div>
-              <span>Gender:&nbsp;&nbsp;</span>
+            <div className="input-radio">
+              <span>Gender:</span>
               <Input
                 label="Male"
                 type={'radio'}
