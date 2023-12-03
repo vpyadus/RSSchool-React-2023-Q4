@@ -1,8 +1,7 @@
 import * as yup from 'yup';
 import { FormFields } from '.';
 
-// yup schema
-const schema: yup.ObjectSchema<FormFields> = yup.object().shape({
+const formSchema: yup.ObjectSchema<FormFields> = yup.object().shape({
   formType: yup.string().required('Form Type is missing'),
 
   name: yup
@@ -61,4 +60,4 @@ const schema: yup.ObjectSchema<FormFields> = yup.object().shape({
   country: yup.string().required('Country is required'),
 });
 
-export default schema;
+export default formSchema;

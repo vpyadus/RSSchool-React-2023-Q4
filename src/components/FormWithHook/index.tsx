@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import schema from './schema';
+import formSchema from './schema';
 import Input from '../Input';
 import {
   FormData,
@@ -12,6 +12,9 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { AppDispatch, StoreState } from '../../store/store';
 import getBase64FileRepresentation from '../../utils/getBase64FileRepresentation';
+import { useEffect, useState } from 'react';
+import PasswordStrength from '../PasswordStrength';
+import getPasswordStrength from '../../utils/getPasswordStrength';
 
 export type FormFields = {
   formType: string;
@@ -34,13 +37,16 @@ const FormWithHook = (): JSX.Element => {
     (store: StoreState) => store.countries.countries
   );
 
+  const [passwordStrength, setPasswordStrength] = useState<number>(0);
+
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isValid },
   } = useForm<FormFields>({
     mode: 'onChange',
-    resolver: yupResolver(schema),
+    resolver: yupResolver(formSchema),
     defaultValues: {
       formType: 'react hook form based',
       name: '',
@@ -54,6 +60,13 @@ const FormWithHook = (): JSX.Element => {
       country: '',
     },
   });
+
+  const watchPassword = watch('password');
+  useEffect(() => {
+    if (watchPassword === '') setPasswordStrength(0);
+    const strength = getPasswordStrength(watchPassword);
+    setPasswordStrength(strength);
+  }, [watchPassword]);
 
   const onSubmit: SubmitHandler<FormFields> = async (
     data: FormFields
@@ -108,13 +121,16 @@ const FormWithHook = (): JSX.Element => {
             />
           </div>
           <div className="form__row">
-            <Input
-              label="Password:"
-              type={'password'}
-              id="input-password"
-              {...register('password')}
-              error={errors.password && errors.password.message}
-            />
+            <div>
+              <PasswordStrength strength={passwordStrength} />
+              <Input
+                label="Password:"
+                type={'password'}
+                id="input-password"
+                {...register('password')}
+                error={errors.password && errors.password.message}
+              />
+            </div>
             <Input
               label="Confirm Password:"
               type={'password'}

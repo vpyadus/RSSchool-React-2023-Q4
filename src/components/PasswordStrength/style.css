@@ -1,0 +1,36 @@
+.pswd__container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 15px;
+}
+
+.pswd {
+  width: 10px;
+  height: 10px;
+  border-radius: 16px;
+}
+
+.pswd__legend {
+  width: 80px;
+}
+
+.pswd.strength1 {
+  background-color: red;
+  border: solid 1px red;
+}
+
+.pswd.strength2 {
+  background-color: orange;
+  border: solid 1px orange;
+}
+
+.pswd.strength3 {
+  background-color: lightgreen;
+  border: solid 1px lightgreen;
+}
+
+.pswd.strength4 {
+  background-color: green;
+  border: solid 1px green;
+}

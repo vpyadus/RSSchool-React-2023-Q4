@@ -1,4 +1,4 @@
-import { FormEventHandler, useRef } from 'react';
+import { ChangeEvent, FormEventHandler, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '../Input';
 import { AppDispatch, StoreState } from '../../store/store';
@@ -9,6 +9,8 @@ import {
   addFormData,
 } from '../../features/formDataSlice/formDataSlice';
 import getBase64FileRepresentation from '../../utils/getBase64FileRepresentation';
+import PasswordStrength from '../PasswordStrength';
+import getPasswordStrength from '../../utils/getPasswordStrength';
 
 const FormWithRef = (): JSX.Element => {
   const formTypeRef = useRef<HTMLInputElement>(null);
@@ -29,6 +31,12 @@ const FormWithRef = (): JSX.Element => {
   const countries: Array<string> = useSelector(
     (store: StoreState) => store.countries.countries
   );
+
+  const [passwordStrength, setPasswordStrength] = useState<number>(0);
+  const handlerPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const strength: number = getPasswordStrength(e.target.value ?? '');
+    setPasswordStrength(strength);
+  };
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (
     e
@@ -87,13 +95,17 @@ const FormWithRef = (): JSX.Element => {
             />
           </div>
           <div className="form__row">
-            <Input
-              label="Password:"
-              type={'password'}
-              id="input-password"
-              name="password"
-              ref={passwordRef}
-            />
+            <div>
+              <PasswordStrength strength={passwordStrength} />
+              <Input
+                label="Password:"
+                type={'password'}
+                id="input-password"
+                name="password"
+                ref={passwordRef}
+                onChange={handlerPasswordChange}
+              />
+            </div>
             <Input
               label="Confirm Password:"
               type={'password'}
