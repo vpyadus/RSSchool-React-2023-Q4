@@ -8,6 +8,7 @@ import {
   FormTypes,
   addFormData,
 } from '../../features/formDataSlice/formDataSlice';
+import getBase64FileRepresentation from '../../utils/getBase64FileRepresentation';
 
 const FormWithRef = (): JSX.Element => {
   const formTypeRef = useRef<HTMLInputElement>(null);
@@ -29,8 +30,14 @@ const FormWithRef = (): JSX.Element => {
     (store: StoreState) => store.countries.countries
   );
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = (e): void => {
+  const handleSubmit: FormEventHandler<HTMLFormElement> = async (
+    e
+  ): Promise<void> => {
     e.preventDefault();
+    const b64Picture: string =
+      imageRef.current?.files && imageRef.current?.files[0]
+        ? await getBase64FileRepresentation(imageRef.current?.files[0])
+        : '';
     const formData: FormData = {
       formType: (formTypeRef.current?.value as FormTypes) ?? 'uncontrolled',
       name: nameRef.current?.value ?? '',
@@ -39,7 +46,7 @@ const FormWithRef = (): JSX.Element => {
       password: passwordRef.current?.value ?? '',
       gender: maleGenderRef.current?.checked ? 'male' : 'female',
       tcAccepted: Boolean(acceptRef.current?.checked),
-      picture: '',
+      picture: b64Picture,
       country: countryRef.current?.value ?? '',
     };
     dispatch(addFormData(formData));

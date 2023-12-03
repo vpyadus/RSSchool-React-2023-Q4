@@ -41,12 +41,13 @@ const Input = (props: InputProps): JSX.Element => {
   const isUncontrolled: boolean = inputRef !== null;
   const isDatalist: boolean = datalist.length > 0;
   const datalistId: string = isDatalist ? `datalist-${id}` : '';
+  const isFileUpload: boolean = type === 'file';
 
   return (
     <>
       <div>
         <label htmlFor={id}>{label}</label>
-        {isUncontrolled ? (
+        {isUncontrolled && (
           <input
             defaultValue={value}
             type={type}
@@ -56,17 +57,21 @@ const Input = (props: InputProps): JSX.Element => {
             defaultChecked={checked}
             list={datalistId}
           />
-        ) : (
-          <input
-            value={value}
-            type={type}
-            id={id}
-            name={name}
-            checked={checked}
-            onChange={onChange}
-            list={datalistId}
-          />
         )}
+        {!isUncontrolled &&
+          (isFileUpload ? (
+            <input type={type} id={id} name={name} onChange={onChange} />
+          ) : (
+            <input
+              value={value}
+              type={type}
+              id={id}
+              name={name}
+              checked={checked}
+              onChange={onChange}
+              list={datalistId}
+            />
+          ))}
         <div className="error-message">&nbsp;{error}</div>
       </div>
       {isDatalist && (

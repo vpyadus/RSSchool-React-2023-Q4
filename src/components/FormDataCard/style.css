@@ -1,7 +1,7 @@
 .formdata__card {
   padding: 15px;
   text-align: left;
-  min-width: 230px;
+  min-width: 320px;
 }
 
 .formdata__card:nth-child(odd) {
@@ -16,4 +16,8 @@
   outline: solid 2px yellow;
   outline-offset: -6px;
   background-color: lightgreen;
+}
+
+.formdata__card img {
+  max-width: 300px;
 }

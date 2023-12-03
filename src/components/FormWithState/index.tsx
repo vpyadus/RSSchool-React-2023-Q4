@@ -9,6 +9,7 @@ import {
 } from '../../features/formDataSlice/formDataSlice';
 import { useNavigate } from 'react-router-dom';
 import { AppDispatch, StoreState } from '../../store/store';
+import getBase64FileRepresentation from '../../utils/getBase64FileRepresentation';
 
 const FormWithState = (): JSX.Element => {
   const [formType] = useState<FormTypes>('controlled');
@@ -46,6 +47,44 @@ const FormWithState = (): JSX.Element => {
     navigate('/');
   };
 
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>): void =>
+    setName(e.target.value);
+
+  const handleAgeChange = (e: ChangeEvent<HTMLInputElement>): void =>
+    setAge(Number(e.target.value));
+
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>): void =>
+    setEmail(e.target.value);
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>): void =>
+    setPassword(e.target.value);
+
+  const handlePasswordConfirmChange = (
+    e: ChangeEvent<HTMLInputElement>
+  ): void => setPasswordConfirm(e.target.value);
+
+  const handleGenderChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    if (e.target.checked) {
+      setGender(e.target.value as Genders);
+    }
+  };
+
+  const handleAcceptedTCChange = (e: ChangeEvent<HTMLInputElement>): void =>
+    setIsTcAccepted(e.target.checked);
+
+  const handlePictureChange = async (
+    e: ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
+    const b64Picture: string =
+      e.target?.files && e.target?.files[0]
+        ? await getBase64FileRepresentation(e.target.files[0])
+        : '';
+    setPicture(b64Picture);
+  };
+
+  const handleCountryChange = (e: ChangeEvent<HTMLInputElement>): void =>
+    setCountry(e.target.value);
+
   return (
     <div className="form__page">
       <form onSubmit={handleSubmit} noValidate>
@@ -58,9 +97,7 @@ const FormWithState = (): JSX.Element => {
               id="input-name"
               name="name"
               value={name}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setName(e.target.value)
-              }
+              onChange={handleNameChange}
             />
             <Input
               label="Age:"
@@ -68,9 +105,7 @@ const FormWithState = (): JSX.Element => {
               id="input-age"
               name="age"
               value={age}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setAge(Number(e.target.value))
-              }
+              onChange={handleAgeChange}
             />
             <Input
               label="Email:"
@@ -78,9 +113,7 @@ const FormWithState = (): JSX.Element => {
               id="input-email"
               name="email"
               value={email}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setEmail(e.target.value)
-              }
+              onChange={handleEmailChange}
             />
           </div>
           <div className="form__row">
@@ -90,9 +123,7 @@ const FormWithState = (): JSX.Element => {
               id="input-password"
               name="password"
               value={password}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setPassword(e.target.value)
-              }
+              onChange={handlePasswordChange}
             />
             <Input
               label="Confirm Password:"
@@ -100,9 +131,7 @@ const FormWithState = (): JSX.Element => {
               id="input-password-confirm"
               name="password-confirm"
               value={passwordConfirm}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setPasswordConfirm(e.target.value)
-              }
+              onChange={handlePasswordConfirmChange}
             />
           </div>
           <div className="form__row">
@@ -114,11 +143,7 @@ const FormWithState = (): JSX.Element => {
                 id="input-gender1"
                 name="gender"
                 value="male"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  if (e.target.checked) {
-                    setGender(e.target.value as Genders);
-                  }
-                }}
+                onChange={handleGenderChange}
                 checked={gender === 'male'}
               />
               <Input
@@ -127,11 +152,7 @@ const FormWithState = (): JSX.Element => {
                 id="input-gender2"
                 name="gender"
                 value="female"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  if (e.target.checked) {
-                    setGender(e.target.value as Genders);
-                  }
-                }}
+                onChange={handleGenderChange}
                 checked={gender === 'female'}
               />
             </div>
@@ -141,9 +162,7 @@ const FormWithState = (): JSX.Element => {
               id="input-accept"
               name="accept"
               value="accepted"
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setIsTcAccepted(e.target.checked)
-              }
+              onChange={handleAcceptedTCChange}
               checked={isTcAccepted}
             />
           </div>
@@ -153,19 +172,14 @@ const FormWithState = (): JSX.Element => {
               type={'file'}
               id="input-picture"
               name="picture"
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setPicture(e.target.value)
-              }
-              value={picture}
+              onChange={handlePictureChange}
             />
             <Input
               label="Select Country:"
               type={'text'}
               id="input-country-select"
               name="country"
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setCountry(e.target.value)
-              }
+              onChange={handleCountryChange}
               value={country}
               datalist={countries}
             />
