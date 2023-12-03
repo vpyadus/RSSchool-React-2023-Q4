@@ -1,8 +1,8 @@
 import { FormEventHandler, useRef } from 'react';
 import Input from '../Input';
 import { useNavigate } from 'react-router-dom';
-import { AppDispatch } from '../../store/store';
-import { useDispatch } from 'react-redux';
+import { AppDispatch, StoreState } from '../../store/store';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   FormData,
   addFormData,
@@ -18,9 +18,14 @@ const FormWithRef = (): JSX.Element => {
   const femaleGenderRef = useRef<HTMLInputElement>(null);
   const acceptRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLInputElement>(null);
+  const countryRef = useRef<HTMLInputElement>(null);
 
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
+
+  const countries: Array<string> = useSelector(
+    (store: StoreState) => store.countries.countries
+  );
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e): void => {
     e.preventDefault();
@@ -33,7 +38,7 @@ const FormWithRef = (): JSX.Element => {
       gender: maleGenderRef.current?.checked ? 'male' : 'female',
       tcAccepted: Boolean(acceptRef.current?.checked),
       picture: '',
-      country: '',
+      country: countryRef.current?.value ?? '',
     };
     dispatch(addFormData(formData));
     navigate('/');
@@ -119,6 +124,14 @@ const FormWithRef = (): JSX.Element => {
               id="input-picture"
               name="picture"
               inputRef={imageRef}
+            />
+            <Input
+              label="Select Country:"
+              type={'text'}
+              id="input-country-select"
+              name="country"
+              inputRef={countryRef}
+              datalist={countries}
             />
           </div>
         </div>

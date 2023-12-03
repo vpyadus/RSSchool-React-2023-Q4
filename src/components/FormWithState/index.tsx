@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEventHandler, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Input from '../Input';
 import {
   FormData,
@@ -7,7 +7,7 @@ import {
   addFormData,
 } from '../../features/formDataSlice/formDataSlice';
 import { useNavigate } from 'react-router-dom';
-import { AppDispatch } from '../../store/store';
+import { AppDispatch, StoreState } from '../../store/store';
 
 const FormWithState = (): JSX.Element => {
   const [name, setName] = useState<string>('');
@@ -18,9 +18,14 @@ const FormWithState = (): JSX.Element => {
   const [gender, setGender] = useState<Genders>('male');
   const [isTcAccepted, setIsTcAccepted] = useState<boolean>(false);
   const [picture, setPicture] = useState<string>('');
+  const [country, setCountry] = useState<string>('');
 
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
+
+  const countries: Array<string> = useSelector(
+    (store: StoreState) => store.countries.countries
+  );
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e): void => {
     e.preventDefault();
@@ -33,7 +38,7 @@ const FormWithState = (): JSX.Element => {
       gender,
       tcAccepted: isTcAccepted,
       picture,
-      country: '',
+      country: country,
     };
     dispatch(addFormData(formData));
     navigate('/');
@@ -149,6 +154,17 @@ const FormWithState = (): JSX.Element => {
                 setPicture(e.target.value)
               }
               value={picture}
+            />
+            <Input
+              label="Select Country:"
+              type={'text'}
+              id="input-country-select"
+              name="country"
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setCountry(e.target.value)
+              }
+              value={country}
+              datalist={countries}
             />
           </div>
         </div>

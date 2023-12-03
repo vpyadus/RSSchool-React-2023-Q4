@@ -1,4 +1,4 @@
-import { ChangeEventHandler, Ref } from 'react';
+import { ChangeEventHandler, RefObject } from 'react';
 import { Genders } from '../../features/formDataSlice/formDataSlice';
 
 export type InputType =
@@ -17,8 +17,9 @@ export type InputProps = {
   label: string;
   value?: string | number | Genders;
   checked?: boolean;
-  inputRef?: Ref<HTMLInputElement>;
+  inputRef?: RefObject<HTMLInputElement>;
   onChange?: ChangeEventHandler<HTMLInputElement>;
+  datalist?: Array<string>;
 };
 
 const Input = (props: InputProps): JSX.Element => {
@@ -31,9 +32,12 @@ const Input = (props: InputProps): JSX.Element => {
     checked = false,
     inputRef = null,
     onChange,
+    datalist = [],
   } = props;
 
   const isUncontrolled: boolean = inputRef !== null;
+  const isDatalist: boolean = datalist.length > 0;
+  const datalistId: string = isDatalist ? `datalist-${id}` : '';
 
   return (
     <>
@@ -46,6 +50,7 @@ const Input = (props: InputProps): JSX.Element => {
           name={name}
           ref={inputRef}
           defaultChecked={checked}
+          list={datalistId}
         />
       ) : (
         <input
@@ -55,7 +60,15 @@ const Input = (props: InputProps): JSX.Element => {
           name={name}
           checked={checked}
           onChange={onChange}
+          list={datalistId}
         />
+      )}
+      {isDatalist && (
+        <datalist id={datalistId}>
+          {datalist.map((country: string, index: number) => (
+            <option value={country} key={index} />
+          ))}
+        </datalist>
       )}
     </>
   );
