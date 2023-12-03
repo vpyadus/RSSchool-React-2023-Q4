@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { FormFields } from '.';
+import { FormFields } from '../components/FormWithHook';
 
 const formSchema: yup.ObjectSchema<FormFields> = yup.object().shape({
   formType: yup.string().required('Form Type is missing'),
@@ -12,12 +12,15 @@ const formSchema: yup.ObjectSchema<FormFields> = yup.object().shape({
   age: yup
     .number()
     .required('Age is required')
-    .moreThan(-1, 'Number should be positive'),
+    .positive('Number should be positive'),
 
   email: yup
     .string()
     .required('Email is required')
-    .email('Please enter correct email'),
+    .matches(
+      /^([a-zA-Z0-9_-]+\.)*[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*\.[a-zA-Z]{2,6}$/,
+      'Please enter correct email'
+    ),
 
   password: yup
     .string()
@@ -35,7 +38,10 @@ const formSchema: yup.ObjectSchema<FormFields> = yup.object().shape({
     .required('Confirm Password is required')
     .oneOf([yup.ref('password'), ''], 'Should match the entered password'),
 
-  gender: yup.string().required('Gender is required'),
+  gender: yup
+    .string()
+    .required('Gender is required')
+    .oneOf(['male', 'female'], 'Please select a gender'),
 
   tcAccepted: yup
     .boolean()
@@ -46,15 +52,20 @@ const formSchema: yup.ObjectSchema<FormFields> = yup.object().shape({
     .mixed<FileList>()
     .required('Image is required')
     .test(
-      'is-valid-type',
-      'Not a valid image type',
-      (value: FileList) =>
-        ['png', 'jpg', 'jpeg'].indexOf(value[0].type.split('/')[1]) > -1
+      'is-image-selected',
+      'Image is not selected',
+      (value: FileList) => value.length > 0
     )
+    .test('is-valid-type', 'Not a valid image type', (value: FileList) => {
+      return (
+        !!value.length &&
+        ['png', 'jpg', 'jpeg'].indexOf(value[0].type.split('/')[1]) > -1
+      );
+    })
     .test(
       'is-valid-size',
       'Image size is larger than 1Mb',
-      (value: FileList) => value[0].size < 1000000
+      (value: FileList) => !!value.length && value[0].size < 1000000
     ),
 
   country: yup.string().required('Country is required'),

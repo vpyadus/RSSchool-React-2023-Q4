@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Input from '../Input';
 import { AppDispatch, StoreState } from '../../store/store';
 import { useDispatch, useSelector } from 'react-redux';
+import { ValidationError } from 'yup';
 import {
   FormData,
   FormTypes,
@@ -11,6 +12,12 @@ import {
 import getBase64FileRepresentation from '../../utils/getBase64FileRepresentation';
 import PasswordStrength from '../PasswordStrength';
 import getPasswordStrength from '../../utils/getPasswordStrength';
+import { FormFields } from '../FormWithHook';
+import formSchema from '../../shared/schema';
+
+export type FieldValidationErrors = {
+  [key in keyof FormFields]?: string;
+};
 
 const FormWithRef = (): JSX.Element => {
   const formTypeRef = useRef<HTMLInputElement>(null);
@@ -38,27 +45,67 @@ const FormWithRef = (): JSX.Element => {
     setPasswordStrength(strength);
   };
 
+  const [validationErrors, setValidationErrors] =
+    useState<FieldValidationErrors>({});
+
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (
     e
   ): Promise<void> => {
     e.preventDefault();
-    const b64Picture: string =
-      imageRef.current?.files && imageRef.current?.files[0]
-        ? await getBase64FileRepresentation(imageRef.current?.files[0])
-        : '';
-    const formData: FormData = {
-      formType: (formTypeRef.current?.value as FormTypes) ?? 'uncontrolled',
+
+    const data: FormFields = {
+      formType: formTypeRef.current?.value ?? '',
       name: nameRef.current?.value ?? '',
       age: Number(ageRef.current?.value),
       email: emailRef.current?.value ?? '',
       password: passwordRef.current?.value ?? '',
-      gender: maleGenderRef.current?.checked ? 'male' : 'female',
+      passwordConfirm: passwordConfirmRef.current?.value ?? '',
+      gender: maleGenderRef.current?.checked
+        ? 'male'
+        : femaleGenderRef.current?.checked
+          ? 'female'
+          : '',
       tcAccepted: Boolean(acceptRef.current?.checked),
-      picture: b64Picture,
+      picture: imageRef.current?.files ?? ([] as unknown as FileList),
       country: countryRef.current?.value ?? '',
     };
-    dispatch(addFormData(formData));
-    navigate('/');
+
+    try {
+      formSchema.validateSync(data, { abortEarly: false });
+
+      const b64Picture: string =
+        imageRef.current?.files && imageRef.current?.files[0]
+          ? await getBase64FileRepresentation(imageRef.current?.files[0])
+          : '';
+      const formData: FormData = {
+        formType: (formTypeRef.current?.value as FormTypes) ?? 'uncontrolled',
+        name: nameRef.current?.value ?? '',
+        age: Number(ageRef.current?.value),
+        email: emailRef.current?.value ?? '',
+        password: passwordRef.current?.value ?? '',
+        gender: maleGenderRef.current?.checked ? 'male' : 'female',
+        tcAccepted: Boolean(acceptRef.current?.checked),
+        picture: b64Picture,
+        country: countryRef.current?.value ?? '',
+      };
+      dispatch(addFormData(formData));
+      navigate('/');
+    } catch (e) {
+      if (e instanceof ValidationError) {
+        const errors: FieldValidationErrors = e.inner.reduce(
+          (res: FieldValidationErrors, error: ValidationError) => {
+            if (!error.path) return res;
+            if (!res[error.path as keyof FieldValidationErrors]) {
+              res[error.path as keyof FieldValidationErrors] = error.message;
+            }
+            return res;
+          },
+          {}
+        );
+        console.log(errors);
+        setValidationErrors(errors);
+      }
+    }
   };
 
   return (
@@ -78,6 +125,7 @@ const FormWithRef = (): JSX.Element => {
               id="input-name"
               name="name"
               ref={nameRef}
+              error={validationErrors.name}
             />
             <Input
               label="Age:"
@@ -85,6 +133,7 @@ const FormWithRef = (): JSX.Element => {
               id="input-age"
               name="age"
               ref={ageRef}
+              error={validationErrors.age}
             />
             <Input
               label="Email:"
@@ -92,6 +141,7 @@ const FormWithRef = (): JSX.Element => {
               id="input-email"
               name="email"
               ref={emailRef}
+              error={validationErrors.email}
             />
           </div>
           <div className="form__row">
@@ -104,6 +154,7 @@ const FormWithRef = (): JSX.Element => {
                 name="password"
                 ref={passwordRef}
                 onChange={handlerPasswordChange}
+                error={validationErrors.password}
               />
             </div>
             <Input
@@ -112,6 +163,7 @@ const FormWithRef = (): JSX.Element => {
               id="input-password-confirm"
               name="password-confirm"
               ref={passwordConfirmRef}
+              error={validationErrors.passwordConfirm}
             />
           </div>
           <div className="form__row">
@@ -124,7 +176,7 @@ const FormWithRef = (): JSX.Element => {
                 name="gender"
                 value="male"
                 ref={maleGenderRef}
-                checked
+                error={validationErrors.gender}
               />
               <Input
                 label="Female"
@@ -142,6 +194,7 @@ const FormWithRef = (): JSX.Element => {
               name="accept"
               value="accepted"
               ref={acceptRef}
+              error={validationErrors.tcAccepted}
             />
           </div>
           <div className="form__row">
@@ -151,6 +204,7 @@ const FormWithRef = (): JSX.Element => {
               id="input-picture"
               name="picture"
               ref={imageRef}
+              error={validationErrors.picture}
             />
             <Input
               label="Select Country:"
@@ -159,6 +213,7 @@ const FormWithRef = (): JSX.Element => {
               name="country"
               ref={countryRef}
               datalist={countries}
+              error={validationErrors.country}
             />
           </div>
         </div>
